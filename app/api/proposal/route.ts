@@ -15,7 +15,8 @@ import { toJudgeInput } from "@/lib/judge-schema";
 import { MESSAGES } from "@/lib/messages";
 import { ProposalRequestSchema } from "@/lib/proposal-schema";
 import { toCalcEdited } from "@/lib/review";
-import { fetchAllowedThemes, fetchEffectSentences, fetchPrices, fetchRules } from "@/lib/rules-source";
+import { fitsParcel, summarizeLayout } from "@/lib/layout";
+import { fetchAllowedThemes, fetchEffectSentences, fetchLayoutItems, fetchPrices, fetchRules } from "@/lib/rules-source";
 import { createAnonClient } from "@/lib/supabase";
 import { withPolishCache } from "@/lib/polish-cache";
 import { rejectCrossSite } from "@/lib/same-origin";
@@ -46,6 +47,19 @@ export async function POST(request: Request) {
       return fail("THEME_NOT_ALLOWED", "이 용도지역에서는 고를 수 없는 테마예요");
     }
 
+    // 2-1) 배치한 시설물이 있으면 시설물 표와 맞춰 보고, 면적 합이 필지 면적을 넘지 않는지 확인 (토지만)
+    let layoutUnits: number | null = null;
+    let layoutSummary: ReturnType<typeof summarizeLayout> | null = null;
+    if (req.layout.length > 0) {
+      if (req.type !== "land") return fail("VALIDATION_ERROR", "배치는 토지 진단에서만 쓸 수 있어요");
+      layoutSummary = summarizeLayout(await fetchLayoutItems(client, req.theme), req.layout);
+      if (!layoutSummary.ok) return fail("VALIDATION_ERROR", layoutSummary.message);
+      if (!fitsParcel(layoutSummary.totalArea, req.area)) {
+        return fail("VALIDATION_ERROR", "배치한 시설물 면적이 필지 면적을 넘어요. 시설물을 줄여 주세요");
+      }
+      layoutUnits = layoutSummary.units;
+    }
+
     // 3) 단가표·공시지가로 계산 (계산할 수 없는 값은 이유와 함께 "계산 불가"로 돌려준다)
     const prices = await fetchPrices(client);
     const input: CalcInput = {
@@ -56,6 +70,7 @@ export async function POST(request: Request) {
       totalFloorArea: req.totalFloorArea,
       buildingStandardValue: req.buildingStandardValue,
       edited: toCalcEdited(req.edited),
+      layout: layoutUnits === null ? null : { units: layoutUnits },
     };
     const income = calcIncome(input, prices);
     const price = req.officialPrice === null
@@ -74,6 +89,7 @@ export async function POST(request: Request) {
 
     return ok({
       theme: req.theme,
+      layout: layoutSummary && layoutSummary.ok ? { lines: layoutSummary.lines, totalArea: layoutSummary.totalArea } : null,
       income,
       price,
       effects,

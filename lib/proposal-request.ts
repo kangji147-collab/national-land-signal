@@ -2,6 +2,7 @@
 // 서버는 이 값으로 🟢인지·허용 테마인지 다시 확인하고, 수익·매수 가격을 단가표로 계산한다.
 import { type JudgeRequest, buildJudgeRequest } from "./judge-request";
 import type { EditedKey, ReviewedValues } from "./review";
+import type { PlacedCount } from "./layout";
 import type { Answer, QuestionKey } from "./types";
 
 export interface ProposalRequest extends JudgeRequest {
@@ -18,6 +19,8 @@ export interface ProposalRequest extends JudgeRequest {
   approvalDate: string;
   /** 민원인이 고친 항목 */
   edited: EditedKey[];
+  /** 배치 시뮬레이터에서 놓은 시설물 이름·개수 (안 썼으면 빈 목록) */
+  layout: PlacedCount[];
 }
 
 export function buildProposalRequest(
@@ -25,6 +28,7 @@ export function buildProposalRequest(
   answers: Partial<Record<QuestionKey, Answer | null | undefined>>,
   theme: string,
   buildingStandardValue: number | null,
+  layout: PlacedCount[] = [],
 ): ProposalRequest {
   return {
     ...buildJudgeRequest(reviewed, answers),
@@ -35,6 +39,7 @@ export function buildProposalRequest(
     buildingStandardValue: reviewed.mode === "building" ? buildingStandardValue : null,
     approvalDate: reviewed.building?.approvalDate ?? "",
     edited: [...reviewed.edited],
+    layout: layout.map((l) => ({ name: l.name, count: l.count })),
   };
 }
 

@@ -10,7 +10,7 @@ import { type PickedPhoto } from "../_components/PhotoStep";
 import { type ProposalData, ProposalStep } from "../_components/ProposalStep";
 
 /** 가짜 현장 사진(빈 땅)과 가짜 개발 후 그림(주차장)을 그린다 */
-function draw(kind: "before" | "after"): HTMLCanvasElement {
+export function draw(kind: "before" | "after"): HTMLCanvasElement {
   const c = document.createElement("canvas");
   c.width = 800;
   c.height = 500;
@@ -47,6 +47,36 @@ function draw(kind: "before" | "after"): HTMLCanvasElement {
   return c;
 }
 
+/** 가짜 사진 위에 시설물 이름표를 얹은 가짜 배치도 */
+function drawLayout(base: HTMLCanvasElement): HTMLCanvasElement {
+  const c = document.createElement("canvas");
+  c.width = base.width;
+  c.height = base.height;
+  const x = c.getContext("2d")!;
+  x.drawImage(base, 0, 0);
+  x.font = "600 18px sans-serif";
+  x.textBaseline = "middle";
+  const tags: [string, number, number][] = [["🚗 주차 1면", 150, 330], ["🚗 주차 1면", 270, 330], ["🚗 주차 1면", 390, 330], ["🚗 주차 1면", 210, 410], ["🚗 주차 1면", 340, 410], ["🏠 관리 부스", 620, 300]];
+  for (const [t, cx, cy] of tags) {
+    const w = x.measureText(t).width + 24;
+    x.fillStyle = "rgba(8,32,94,0.92)";
+    x.beginPath();
+    x.roundRect(cx - w / 2, cy - 18, w, 36, 18);
+    x.fill();
+    x.strokeStyle = "#fff";
+    x.lineWidth = 2;
+    x.stroke();
+    x.fillStyle = "#fff";
+    x.fillText(t, cx - w / 2 + 12, cy);
+  }
+  x.fillStyle = "#0e3aaa";
+  x.fillRect(0, 34, 150, 34);
+  x.fillStyle = "#fff";
+  x.font = "700 18px sans-serif";
+  x.fillText("직접 배치안", 12, 51);
+  return c;
+}
+
 const REQUEST: ProposalRequest = {
   type: "land",
   landCategory: "대",
@@ -60,6 +90,10 @@ const REQUEST: ProposalRequest = {
   buildingStandardValue: null,
   approvalDate: "",
   edited: ["area"],
+  layout: [
+    { name: "주차 1면", count: 12 },
+    { name: "관리 부스", count: 1 },
+  ],
 };
 
 const REVIEWED: ReviewedValues = {
@@ -79,15 +113,15 @@ const REVIEWED: ReviewedValues = {
 
 const INCOME: IncomeRange = {
   ok: true,
-  min: 18_000_000,
-  max: 52_000_000,
-  formula: "면적 ÷ 1면당 필요 면적 × 월정기 요금 × 12개월",
+  min: 5_760_000,
+  max: 17_280_000,
+  formula: "배치한 주차면 12면 × 월정기 요금 × 12개월",
   used: [
-    { item: "1면당 필요 면적", min: 25, max: 25, unit: "㎡/면", source: "[가짜 예시] 고정값", baseYear: 2026 },
     { item: "월정기 요금", min: 40000, max: 120000, unit: "원/월/면", source: "[가짜 예시] 지자체 자료", baseYear: 2026 },
   ],
   baseYears: [2026],
-  basedOnUserEdited: true,
+  basedOnUserEdited: false,
+  basedOnLayout: true,
 };
 
 const PRICE: PurchasePrice = {
@@ -113,19 +147,28 @@ const DATA: ProposalData = {
     ],
   },
   oldBuilding: null,
+  layout: {
+    lines: [
+      { name: "주차 1면", icon: "🚗", count: 12, area: 300 },
+      { name: "관리 부스", icon: "🏠", count: 1, area: 9 },
+    ],
+    totalArea: 309,
+  },
 };
 
 export function DemoProposal() {
-  const [ready, setReady] = useState<{ photo: PickedPhoto; afterSrc: string } | null>(null);
+  const [ready, setReady] = useState<{ photo: PickedPhoto; afterSrc: string; layoutSrc: string } | null>(null);
 
   useEffect(() => {
     const before = draw("before");
     const after = draw("after");
+    const layout = drawLayout(before);
     before.toBlob((blob) => {
       if (!blob) return;
       setReady({
         photo: { blob, width: 800, height: 500, previewUrl: before.toDataURL("image/jpeg", 0.9), originalBytes: blob.size },
         afterSrc: after.toDataURL("image/jpeg", 0.9),
+        layoutSrc: layout.toDataURL("image/jpeg", 0.9),
       });
     }, "image/jpeg", 0.9);
   }, []);
@@ -140,6 +183,8 @@ export function DemoProposal() {
         request={REQUEST}
         reviewed={REVIEWED}
         photo={ready.photo}
+        layoutImage={ready.layoutSrc}
+        placed={[]}
         cached={DATA}
         onLoaded={() => {}}
         cachedImage={{ src: ready.afterSrc, remaining: 4 }}

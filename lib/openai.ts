@@ -47,12 +47,19 @@ export interface SimulatedImage {
  * 현장 사진 + 요청 글 → 개발 후 모습 이미지(JPEG). 사진 구도를 유지하도록 이미지 "편집" 기능을 쓴다.
  * 실패하면 던진다. (사진·요청 글·키는 오류 메시지·로그에 남기지 않는다)
  */
-export async function simulateImage(photo: { bytes: Uint8Array; mime: "image/jpeg" | "image/png" }, prompt: string, timeoutMs: number = IMAGE_TIMEOUT_MS): Promise<SimulatedImage> {
+export async function simulateImage(
+  photo: { bytes: Uint8Array; mime: "image/jpeg" | "image/png" },
+  prompt: string,
+  timeoutMs: number = IMAGE_TIMEOUT_MS,
+  /** (선택) 이름표가 붙은 배치도 그림: 시설물을 놓을 자리를 알려 주는 참고용 두 번째 그림 */
+  guide?: { bytes: Uint8Array; mime: "image/jpeg" | "image/png" },
+): Promise<SimulatedImage> {
   const ext = photo.mime === "image/png" ? "png" : "jpg";
   const file = await toFile(photo.bytes, `site.${ext}`, { type: photo.mime });
+  const guideFile = guide ? await toFile(guide.bytes, `guide.${guide.mime === "image/png" ? "png" : "jpg"}`, { type: guide.mime }) : null;
   const res = await createClient(timeoutMs).images.edit({
     model: process.env.OPENAI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL,
-    image: file,
+    image: guideFile ? [file, guideFile] : file,
     prompt,
     n: 1,
     quality: "medium", // 비용과 품질의 균형

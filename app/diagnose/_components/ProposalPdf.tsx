@@ -64,7 +64,7 @@ function Block({ title, block }: { title: string; block: DocBlock }) {
   );
 }
 
-export function ProposalPdf({ doc, photoUrl, afterUrl }: { doc: ProposalDoc; photoUrl: string | null; afterUrl: string | null }) {
+export function ProposalPdf({ doc, photoUrl, afterUrl, layoutUrl = null }: { doc: ProposalDoc; photoUrl: string | null; afterUrl: string | null; layoutUrl?: string | null }) {
   return (
     <Document title={`${doc.title} - ${doc.theme}`} author={doc.serviceName} language="ko">
       <Page size="A4" style={s.page}>
@@ -90,6 +90,18 @@ export function ProposalPdf({ doc, photoUrl, afterUrl }: { doc: ProposalDoc; pho
         {doc.oldBuildingNote && (
           <View style={s.warn}>
             <Text>{doc.oldBuildingNote}</Text>
+          </View>
+        )}
+
+        {doc.layout && (
+          <View style={s.section} wrap={false}>
+            <Text style={s.h2}>{doc.layout.heading}</Text>
+            {doc.layout.imageIncluded && layoutUrl && <Image src={layoutUrl} style={s.img} />}
+            {doc.layout.lines.map((l, i) => (
+              <Text key={i} style={i === doc.layout!.lines.length - 1 ? s.caption : s.note}>
+                {l}
+              </Text>
+            ))}
           </View>
         )}
 
@@ -143,8 +155,8 @@ export function ProposalPdf({ doc, photoUrl, afterUrl }: { doc: ProposalDoc; pho
 }
 
 /** PDF를 만들어 브라우저 다운로드로 내려받게 한다. (서버로 보내지 않음) */
-export async function downloadProposalPdf(doc: ProposalDoc, photoUrl: string | null, afterUrl: string | null): Promise<void> {
-  const blob = await pdf(<ProposalPdf doc={doc} photoUrl={photoUrl} afterUrl={afterUrl} />).toBlob();
+export async function downloadProposalPdf(doc: ProposalDoc, photoUrl: string | null, afterUrl: string | null, layoutUrl: string | null = null): Promise<void> {
+  const blob = await pdf(<ProposalPdf doc={doc} photoUrl={photoUrl} afterUrl={afterUrl} layoutUrl={layoutUrl} />).toBlob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

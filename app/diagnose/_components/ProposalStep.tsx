@@ -22,6 +22,8 @@ export interface ProposalData {
   /** 기대효과 문장 (source: ai = AI가 다듬음 / table = 문장표 기본 문장) */
   effects: { sentences: string[]; source: "ai" | "table" };
   oldBuilding: OldBuilding | null;
+  /** 배치 시뮬레이터로 놓은 시설물 (서버가 표와 맞춰 확인한 값). 안 썼으면 null */
+  layout?: { lines: { name: string; icon: string; count: number; area: number }[]; totalArea: number } | null;
 }
 type State = { phase: "loading" } | { phase: "done"; data: ProposalData } | { phase: "error"; error: UiError };
 // 서버가 AI 다듬기를 최대 12초 기다리므로 그보다 넉넉하게
@@ -54,6 +56,16 @@ function ElapsedSeconds() {
   );
 }
 
+/** 배치도 그림(JPEG 데이터 주소)을 보낼 수 있는 파일로 바꾼다 */
+function dataUrlToBlob(dataUrl: string): Blob {
+  const [head, b64] = dataUrl.split(",");
+  const mime = /data:([^;]+)/.exec(head)?.[1] ?? "image/jpeg";
+  const bin = atob(b64 ?? "");
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -67,6 +79,8 @@ export function ProposalStep({
   request,
   reviewed,
   photo,
+  layoutImage,
+  placed,
   cached,
   onLoaded,
   cachedImage,
@@ -78,6 +92,10 @@ export function ProposalStep({
   reviewed: ReviewedValues;
   /** 시뮬레이션에 쓰는 줄인 사진 (화면 표시용 미리보기 주소 포함) */
   photo: PickedPhoto;
+  /** 배치 시뮬레이터에서 만든 배치도 그림 (JPEG 주소). 배치하지 않았으면 null */
+  layoutImage: string | null;
+  /** 사진 위에 놓은 시설물(이름·위치). 시뮬레이션 이미지도 같은 배치로 그리게 서버에 알려 준다. 배치하지 않았으면 빈 목록 */
+  placed: readonly { name: string; x: number; y: number }[];
   /** 같은 요청으로 이미 받아 둔 결과가 있으면 서버를 다시 부르지 않고 이것을 쓴다 (AI 재호출 방지) */
   cached: ProposalData | null;
   onLoaded: (data: ProposalData) => void;
@@ -95,7 +113,9 @@ export function ProposalStep({
     const ctl = new AbortController();
     const body = new FormData();
     body.append("photo", photo.blob, "site.jpg");
-    body.append("meta", JSON.stringify(request));
+    // 배치한 시설물의 이름·위치와 배치도 그림을 함께 보낸다 (AI가 같은 개수·자리로 그리게)
+    body.append("meta", JSON.stringify({ ...request, layoutPlan: placed.map((p) => ({ name: p.name, x: p.x, y: p.y })) }));
+    if (layoutImage && placed.length > 0) body.append("layout", dataUrlToBlob(layoutImage), "layout.jpg");
     callApi("/api/simulate", { method: "POST", body }, IMAGE_TIMEOUT_MS, ctl.signal).then((r) => {
       if (r.kind === "aborted") return;
       if (r.kind === "ok") {
@@ -147,10 +167,10 @@ export function ProposalStep({
     setPdfError(null);
     try {
       const imageIncluded = image.phase === "done";
-      const doc = buildProposalDoc({ reviewed, proposal: state.data, imageIncluded });
+      const doc = buildProposalDoc({ reviewed, proposal: state.data, imageIncluded, layoutImageIncluded: !!layoutImage });
       // PDF 도구는 무거워서 이 버튼을 누를 때만 불러온다
       const { downloadProposalPdf } = await import("./ProposalPdf");
-      await downloadProposalPdf(doc, imageIncluded ? await blobToDataUrl(photo.blob) : null, image.phase === "done" ? image.src : null);
+      await downloadProposalPdf(doc, imageIncluded ? await blobToDataUrl(photo.blob) : null, image.phase === "done" ? image.src : null, layoutImage);
     } catch {
       // 사진·내용은 남기지 않는다
       setPdfError("PDF를 만들지 못했어요. 잠시 후 다시 시도해 주세요");
@@ -170,6 +190,29 @@ export function ProposalStep({
           선택한 테마: <strong className="font-bold">{request.theme}</strong>
         </p>
       </header>
+
+      {state.phase === "done" && state.data.layout && state.data.layout.lines.length > 0 && (
+        <section className={cardClass} data-testid="layout-card">
+          <h2 className="k-h2">배치도 (직접 배치한 안)</h2>
+          {layoutImage && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={layoutImage} alt="사진 위에 시설물을 직접 배치한 그림" className="w-full rounded-sm border border-zinc-300 object-contain dark:border-zinc-700" data-testid="layout-image" />
+          )}
+          <ul className="text-base leading-7" data-testid="layout-lines">
+            {state.data.layout.lines.map((l) => (
+              <li key={l.name} className="flex justify-between gap-3 border-b border-[var(--line)] py-1">
+                <span>
+                  {l.icon} {l.name} × {l.count}
+                </span>
+                <span className={noteClass}>{l.area.toLocaleString("ko-KR")}㎡</span>
+              </li>
+            ))}
+          </ul>
+          <p className={noteClass}>
+            시설물 면적 합 {state.data.layout.totalArea.toLocaleString("ko-KR")}㎡ / 필지 면적 {reviewed.area.toLocaleString("ko-KR")}㎡. 사진에는 축척이 없어 놓은 위치는 참고용 그림이고, 개수와 면적이 예상 수익 계산에 쓰였어요.
+          </p>
+        </section>
+      )}
 
       <section className={cardClass} data-testid="simulation">
         <h2 className="k-h2">시뮬레이션 이미지</h2>

@@ -5,6 +5,7 @@
 //       (규칙이 비면 안전 방향인 🟡이 되긴 하지만, 오류인 줄 모르고 결과를 믿게 되므로 알리는 것이 맞다)
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { PriceRow } from "./calc";
+import type { LayoutItem } from "./layout";
 import { normalizeZoneName } from "./normalize-zone";
 import { type Theme, themesFor } from "./themes";
 import type { PropertyType, RuleCategory, RuleRow, Signal } from "./types";
@@ -143,5 +144,39 @@ export async function fetchEffectSentences(client: SupabaseClient, theme: string
       throw new RulesSourceError("기대효과 문장표에 이상한 줄이 있어요");
     }
     return row.sentence.trim();
+  });
+}
+
+/** 배치 시뮬레이터 시설물 표(layout_items)에서 이 테마의 시설물을 읽는다. 표에 없으면 빈 목록(=배치 기능 없이 진행) */
+export async function fetchLayoutItems(client: SupabaseClient, theme: string): Promise<LayoutItem[]> {
+  const { data, error } = await client
+    .from("layout_items")
+    .select("theme,name,icon,area_m2,units,unit_label,sort_order,description_en")
+    .eq("theme", theme)
+    .range(0, MAX_RULE_ROWS - 1);
+  if (error || !Array.isArray(data)) throw new RulesSourceError("시설물 표를 읽지 못했어요");
+  if (data.length >= MAX_RULE_ROWS) throw new RulesSourceError("시설물 표가 너무 커서 일부가 잘렸을 수 있어요");
+
+  return data.map((row: Record<string, unknown>) => {
+    // numeric 열은 글자로 올 수 있어 숫자로 바꿔 검사한다
+    const area = Number(row.area_m2);
+    const units = Number(row.units);
+    const order = Number(row.sort_order);
+    if (
+      row.theme !== theme ||
+      typeof row.name !== "string" ||
+      row.name === "" ||
+      typeof row.icon !== "string" ||
+      typeof row.unit_label !== "string" ||
+      !Number.isFinite(area) ||
+      area <= 0 ||
+      !Number.isFinite(units) ||
+      units < 0 ||
+      !Number.isFinite(order)
+    ) {
+      throw new RulesSourceError("시설물 표에 이상한 줄이 있어요");
+    }
+    const descriptionEn = typeof row.description_en === "string" ? row.description_en : "";
+    return { theme, name: row.name, icon: row.icon, areaM2: area, units, unitLabel: row.unit_label, sortOrder: order, descriptionEn };
   });
 }

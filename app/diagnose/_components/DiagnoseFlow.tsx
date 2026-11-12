@@ -12,12 +12,13 @@ import type { ReviewSource, ReviewedValues } from "@/lib/review";
 import type { Theme } from "@/lib/themes";
 import { AddressStep } from "./AddressStep";
 import { type PickedPhoto, PhotoStep, releasePhoto } from "./PhotoStep";
+import { type PlacedItem, PlacementStep, toCounts } from "./PlacementStep";
 import { type ProposalData, ProposalStep } from "./ProposalStep";
 import { type QuestionAnswers, QuestionStep } from "./QuestionStep";
 import { ResultStep } from "./ResultStep";
 import { ReviewStep } from "./ReviewStep";
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6;
+type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7; // 6 = 배치 시뮬레이터(토지만), 7 = 제안서
 
 /** 어떤 필지·종류·건물을 진단 중인지 가리키는 값 */
 const keyOf = (s: ReviewSource) => `${s.land.pnu}|${s.mode}|${s.building?.id ?? ""}`;
@@ -30,17 +31,21 @@ export function DiagnoseFlow({ type }: { type: "land" | "building" }) {
   const [photo, setPhoto] = useState<PickedPhoto | null>(null);
   const [theme, setTheme] = useState<Theme | null>(null);
   const [valueText, setValueText] = useState(""); // 건물 시가표준액 입력 글자
+  const [placed, setPlaced] = useState<PlacedItem[]>([]); // 배치 시뮬레이터: 사진 위에 놓은 시설물
+  const [layoutImage, setLayoutImage] = useState<string | null>(null); // 배치도 그림(JPEG 주소)
 
   // 제안서 단계로 보낼 요청: 값이 바뀔 때만 새로 만든다 (바뀌지 않으면 서버를 다시 부르지 않음)
   const proposalRequest = useMemo(
     () =>
       reviewed && answers && theme
-        ? buildProposalRequest(reviewed, answers, theme, parseStandardValue(valueText).value)
+        ? buildProposalRequest(reviewed, answers, theme, parseStandardValue(valueText).value, toCounts(placed))
         : null,
-    [reviewed, answers, theme, valueText],
+    [reviewed, answers, theme, valueText, placed],
   );
   // 같은 요청이면 받아 둔 제안서 결과를 다시 쓴다 (돌아갔다 와도 AI 문장을 또 만들지 않음). 다른 필지·값이면 버린다.
   const proposalKey = proposalRequest ? JSON.stringify(proposalRequest) : "";
+  // 시뮬레이션 이미지는 배치(개수·위치)가 바뀌면 다시 만들어야 하므로 열쇠에 배치 그림을 반영한다
+  const imageKey = `${proposalKey}|${photo?.previewUrl ?? ""}|${layoutImage ? `${layoutImage.length}:${layoutImage.slice(-48)}` : ""}`;
   const [proposalCache, setProposalCache] = useState<{ key: string; data: ProposalData } | null>(null);
   // 시뮬레이션 이미지는 같은 요청·같은 사진일 때만 다시 쓴다 (다시 만들면 하루 횟수를 또 쓰므로)
   const [imageCache, setImageCache] = useState<{ key: string; img: { src: string; remaining: number | null } } | null>(null);
@@ -69,6 +74,8 @@ export function DiagnoseFlow({ type }: { type: "land" | "building" }) {
               setPhoto(null);
               setTheme(null);
               setValueText("");
+              setPlaced([]);
+              setLayoutImage(null);
             }
             setStep(2);
           }}
@@ -115,25 +122,56 @@ export function DiagnoseFlow({ type }: { type: "land" | "building" }) {
           photo={photo}
           onPhotoChange={setPhoto}
           theme={theme}
-          onThemeChange={setTheme}
+          onThemeChange={(t) => {
+            // 테마가 바뀌면 이전 테마의 시설물 배치는 버린다
+            if (t !== theme) {
+              setPlaced([]);
+              setLayoutImage(null);
+            }
+            setTheme(t);
+          }}
           valueText={valueText}
           onValueTextChange={setValueText}
-          onNext={() => setStep(6)}
+          // 토지는 배치 시뮬레이터를 거치고, 건물은 바로 제안서로 간다
+          onNext={() => setStep(reviewed.mode === "land" ? 6 : 7)}
           onBack={() => setStep(4)}
         />
       )}
 
-      {step === 6 && proposalRequest && photo && reviewed && (
+      {/* 토지만: 사진 위에 시설물을 직접 배치 (개수·면적이 예상 수익 계산에 쓰인다) */}
+      {step === 6 && reviewed && theme && photo && (
+        <PlacementStep
+          theme={theme}
+          parcelArea={reviewed.area}
+          photo={photo}
+          placed={placed}
+          onPlacedChange={setPlaced}
+          onNext={(img) => {
+            setLayoutImage(img);
+            setStep(7);
+          }}
+          onSkip={() => {
+            setPlaced([]);
+            setLayoutImage(null);
+            setStep(7);
+          }}
+          onBack={() => setStep(5)}
+        />
+      )}
+
+      {step === 7 && proposalRequest && photo && reviewed && (
         <ProposalStep
           reviewed={reviewed}
-          key={`${proposalKey}|${photo.previewUrl}`}
+          key={imageKey}
           request={proposalRequest}
           photo={photo}
-          cachedImage={imageCache?.key === `${proposalKey}|${photo.previewUrl}` ? imageCache.img : null}
-          onImage={(img) => setImageCache({ key: `${proposalKey}|${photo.previewUrl}`, img })}
+          layoutImage={layoutImage}
+          placed={layoutImage ? placed : []}
+          cachedImage={imageCache?.key === imageKey ? imageCache.img : null}
+          onImage={(img) => setImageCache({ key: imageKey, img })}
           cached={proposalCache?.key === proposalKey ? proposalCache.data : null}
           onLoaded={(data) => setProposalCache({ key: proposalKey, data })}
-          onBack={() => setStep(5)}
+          onBack={() => setStep(reviewed.mode === "land" ? 6 : 5)}
         />
       )}
     </>

@@ -15,6 +15,8 @@ export interface ProposalDocInput {
   price: Calc<PurchasePrice>;
   effects: { sentences: string[]; source: "ai" | "table" };
   oldBuilding: OldBuilding | null;
+  /** 배치 시뮬레이터로 놓은 시설물 (안 썼으면 null/없음) */
+  layout?: { lines: { name: string; icon: string; count: number; area: number }[]; totalArea: number } | null;
 }
 
 export interface DocBlock {
@@ -44,6 +46,8 @@ export interface ProposalDoc {
   oldBuildingNote: string | null;
   /** ① 시뮬레이션 이미지: 넣었으면 included, 못 만들었으면 제외 문구 */
   image: { included: true; caption: string } | { included: false; text: string };
+  /** 배치도(직접 배치): 배치했으면 글과 그림 포함 여부, 안 했으면 null. (이모지는 PDF 글꼴에 없어 글에는 쓰지 않는다) */
+  layout: { heading: string; lines: string[]; imageIncluded: boolean } | null;
   income: DocBlock;
   price: DocBlock;
   effects: string[];
@@ -108,6 +112,8 @@ export function buildProposalDoc(opts: {
   proposal: ProposalDocInput;
   /** 시뮬레이션 이미지를 PDF에 넣을 수 있는지 (실패·횟수 소진이면 false) */
   imageIncluded: boolean;
+  /** 배치도 그림을 PDF에 넣을 수 있는지 */
+  layoutImageIncluded?: boolean;
   now?: Date;
 }): ProposalDoc {
   const { reviewed: r, proposal: p } = opts;
@@ -134,6 +140,18 @@ export function buildProposalDoc(opts: {
     image: opts.imageIncluded
       ? { included: true, caption: "현재 사진과 개발 후 (AI가 만든 예시 이미지, 실제 개발 결과와 다를 수 있는 참고용)" }
       : { included: false, text: MESSAGES.imageFailed },
+    layout:
+      p.layout && p.layout.lines.length > 0
+        ? {
+            heading: "배치도 (민원인이 직접 배치한 안)",
+            lines: [
+              ...p.layout.lines.map((l) => `${l.name} × ${l.count} (${l.area.toLocaleString("ko-KR")}㎡)`),
+              `시설물 면적 합 ${p.layout.totalArea.toLocaleString("ko-KR")}㎡ / 필지 면적 ${r.area.toLocaleString("ko-KR")}㎡`,
+              "사진에는 축척이 없어 놓은 위치는 참고용 그림이며, 개수와 면적이 예상 수익 계산에 쓰였어요.",
+            ],
+            imageIncluded: !!opts.layoutImageIncluded,
+          }
+        : null,
     income: incomeBlock(p.income),
     price: priceBlock(p.price),
     effects: p.effects.sentences,

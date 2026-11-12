@@ -29,6 +29,8 @@ export interface CalcInput {
   totalFloorArea?: number | null; // 건축물대장의 연면적(㎡) — 건물일 때
   buildingStandardValue?: number | null; // 건물 시가표준액(원) — 민원인이 알면 입력
   edited?: Partial<Record<EditableField, boolean>>;
+  /** 배치 시뮬레이터로 놓은 시설물의 수익 단위 합 (토지·수익이 있는 테마). 있으면 면적 대신 이 값으로 계산한다 */
+  layout?: { units: number } | null;
 }
 
 export type CalcFail = { ok: false; code: "INVALID_INPUT" | "THEME_MISMATCH" | "PRICE_MISSING"; message: string };
@@ -54,6 +56,8 @@ export interface IncomeRange {
   baseYears: number[];
   /** 수정한 값으로 계산했으면 true → "민원인이 수정한 값 기준" */
   basedOnUserEdited: boolean;
+  /** 배치 시뮬레이터로 놓은 시설물을 기준으로 계산했으면 true */
+  basedOnLayout?: boolean;
 }
 
 export interface PurchasePrice {
@@ -119,11 +123,14 @@ export function calcIncome(input: CalcInput, prices: readonly PriceRow[]): Incom
   let formula: string;
   let used: PriceRow[] = [];
   let usedArea: EditableField;
+  let basedOnLayout = false;
 
   if (input.type === "land") {
     const area = input.landArea;
     if (!positive(area)) return fail("INVALID_INPUT", "면적을 확인해 주세요.");
     usedArea = "landArea";
+    // 놓은 시설물이 있으면(수익 단위 > 0) 면적 대신 그 값으로 계산한다
+    const placed = input.layout && input.layout.units > 0 ? input.layout.units : null;
 
     switch (input.theme) {
       case "공영주차장": {
@@ -132,6 +139,15 @@ export function calcIncome(input: CalcInput, prices: readonly PriceRow[]): Incom
         const [per, fee] = rows;
         if (!positive(per.min_value)) return fail("INVALID_INPUT", "단가표의 1면당 필요 면적을 확인해 주세요.");
         const f = annualFactor(fee.unit);
+        if (placed !== null) {
+          // 배치한 주차면 수 × 월정기 요금 (면적으로 면 수를 따로 계산하지 않는다)
+          min = placed * fee.min_value * f;
+          max = placed * fee.max_value * f;
+          formula = `배치한 주차면 ${placed.toLocaleString("ko-KR")}면 × 월정기 요금 × 12개월`;
+          used = [fee];
+          basedOnLayout = true;
+          break;
+        }
         // 면 수는 정수: 1면당 면적이 클수록 면 수가 줄어 최소 수익이 된다
         min = Math.floor(area / per.max_value) * fee.min_value * f;
         max = Math.floor(area / per.min_value) * fee.max_value * f;
@@ -145,6 +161,15 @@ export function calcIncome(input: CalcInput, prices: readonly PriceRow[]): Incom
         const [perKw, gen, price] = rows;
         if (!positive(perKw.min_value)) return fail("INVALID_INPUT", "단가표의 1kW당 필요 면적을 확인해 주세요.");
         const f = annualFactor(price.unit);
+        if (placed !== null) {
+          // 배치한 태양광 용량(kW) × 연 발전량 × 전력 판매 단가
+          min = placed * gen.min_value * price.min_value * f;
+          max = placed * gen.max_value * price.max_value * f;
+          formula = `배치한 태양광 ${placed.toLocaleString("ko-KR")}kW × 연 발전량 × 전력 판매 단가`;
+          used = [gen, price];
+          basedOnLayout = true;
+          break;
+        }
         min = (area / perKw.max_value) * gen.min_value * price.min_value * f;
         max = (area / perKw.min_value) * gen.max_value * price.max_value * f;
         formula = "면적 ÷ 1kW당 필요 면적 × 연 발전량 × 전력 판매 단가";
@@ -156,10 +181,12 @@ export function calcIncome(input: CalcInput, prices: readonly PriceRow[]): Incom
         if (!Array.isArray(rows)) return rows;
         const [rev] = rows;
         const f = annualFactor(rev.unit);
-        min = area * rev.min_value * f;
-        max = area * rev.max_value * f;
-        formula = "면적 × ㎡당 연 매출";
+        const farmArea = placed ?? area; // 배치한 온실 재배 면적이 있으면 그 면적으로
+        min = farmArea * rev.min_value * f;
+        max = farmArea * rev.max_value * f;
+        formula = placed !== null ? `배치한 온실 재배 면적 ${placed.toLocaleString("ko-KR")}㎡ × ㎡당 연 매출` : "면적 × ㎡당 연 매출";
         used = rows;
+        basedOnLayout = placed !== null;
         break;
       }
       default: {
@@ -191,7 +218,9 @@ export function calcIncome(input: CalcInput, prices: readonly PriceRow[]): Incom
     formula,
     used: usedPrices,
     baseYears: [...new Set(usedPrices.map((u) => u.baseYear))].sort((a, b) => a - b),
-    basedOnUserEdited: !!input.edited?.[usedArea],
+    // 놓은 시설물로 계산했으면 면적 수정은 이 숫자와 상관없다
+    basedOnUserEdited: basedOnLayout ? false : !!input.edited?.[usedArea],
+    ...(basedOnLayout ? { basedOnLayout: true } : {}),
   };
 }
 
