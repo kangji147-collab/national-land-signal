@@ -63,7 +63,6 @@ export async function POST(request: Request) {
     if (!gType) return fail("INVALID_FILE", "배치도 그림을 읽지 못했어요. 다시 배치해 주세요");
     guide = { bytes: gBytes, mime: gType === "png" ? "image/png" : "image/jpeg" };
   }
-  if (req.layoutPlan.length > 0 && req.type !== "land") return fail("VALIDATION_ERROR", "배치는 토지 진단에서만 쓸 수 있어요");
   if (req.layoutPlan.length > MAX_PLACED_COUNT) return fail("VALIDATION_ERROR", "입력한 내용을 다시 확인해 주세요");
 
   const basePrompt = buildSimulatePrompt(req.theme, req.type);

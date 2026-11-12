@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 국유지 신호등
 
-## Getting Started
+> 주소만 입력하면 국유지·국유 건물(일반재산)의 **매각 가능 여부를 🟢🟡🔴 신호등으로** 알려 주고, 🟢이면 **현장 사진과 개발 테마로 시뮬레이션 제안서**까지 만들어 주는 웹 서비스
 
-First, run the development server:
+한국자산관리공사의 국유재산 매각 업무를 돕는 민원인용 자가진단 서비스를 기획·구현한 프로젝트입니다. 민원인은 전화 문의와 최대 7일의 대기 없이 매각 가능 여부를 바로 확인하고, 매수 후 모습과 예상 수익을 미리 볼 수 있습니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+| 신호 | 뜻 |
+|---|---|
+| 🟢 초록불 | 매각 가능 → 사진·테마 선택 → 제안서 |
+| 🟡 노란불 | 조건부 가능 → 담당자 상담 안내 (대표 연락처) |
+| 🔴 빨간불 | 내부 규정상 매각 불가 → 이유 안내 |
+
+## 심사 자료
+
+- [PRD.md](PRD.md) — 서비스 기획서 (문제 정의, 성공 기준, 기능, 범위·비범위, 보안)
+- [PLAN.md](PLAN.md) — 작업 계획서 (성공 기준, 작업 순서, 위험과 대응)
+- [DESIGN.md](DESIGN.md) — 설계서 (화면, 데이터 흐름, 서버 API, 데이터 표, 보안 점검표)
+
+## 주요 기능
+
+**1. 주소로 공적 정보 자동 조회 + 신호등 판정**
+- 지번·도로명 주소 검색 → 필지 선택 → 토지이용계획(국토교통부 **브이월드**)과 건축물대장(공공데이터포털 **건축HUB**) 자동 조회
+- 가져온 값을 민원인이 확인·수정 (고친 값은 결과·제안서에 "민원인이 수정한 값"으로 표시)
+- 판정은 **규칙표(Supabase)로만** 합니다. AI가 임의로 판단하지 않고, 확실하지 않으면 🟢로 판정하지 않습니다. (공공 정보에 없는 사항은 보완 질문으로 확인)
+- 🟡에는 상담 연락처, 🔴·🟡에는 판정 근거를 함께 보여 줍니다.
+
+**2. 개발 시뮬레이션 + 제안서 (🟢일 때만)**
+- 현장 사진 1장(10MB 이하, 브라우저에서 약 2MB로 자동 축소) + 용도지역에 허용된 개발 테마 선택
+- **시설물 배치 시뮬레이터**: 사진 위에 시설물(주차면·태양광 구획·온실 등)을 끌어다 놓으면 개수·면적이 예상 수익 계산에 쓰이고, AI 시뮬레이션 이미지도 같은 배치를 따릅니다. (건물은 건물 주변 외부 시설)
+- AI(OpenAI)가 만든 개발 후 이미지, **단가표·공시지가로 계산한** 예상 수익(범위)·예상 매수 가격, 기대효과 문장
+- PDF로 내려받기, 매수 신청 안내(접수 기능 없음)
+
+**운영 방식**
+- 규칙표·테마 허용표·단가표·기대효과 문장표·시설물 표·상담 연락처는 Supabase에 저장하고, 관리자가 Supabase 표 편집기에서 직접 고칩니다. 웹페이지에서는 읽기만 가능합니다. (별도 관리자 페이지 없음)
+- 로그인 없이 쓰는 대신 접속 주소 기준 **하루 사용 횟수**를 제한합니다: 주소 조회 20회, 주소 검색 100회, 시뮬레이션 5회. (실패는 차감하지 않음)
+
+## 지켜야 할 원칙
+
+- 판정과 숫자는 **코드와 표로만** 만듭니다. AI는 기대효과 문장을 다듬고 이미지를 그리는 데만 씁니다.
+- 민원인 개인정보를 받지 않고, 건축물대장의 **소유자 정보는 요청하지도 가져오지도 않습니다.**
+- 입력한 주소와 올린 사진은 **저장하지 않습니다.** (로그에도 남기지 않음)
+- API 키는 서버에서만 쓰고 `.env`에만 보관합니다. (`NEXT_PUBLIC_` 사용 안 함)
+- 결과는 참고용이며, 최종 매각 여부는 한국자산관리공사 심사로 결정됩니다.
+
+## 기술 스택
+
+| 도구 | 역할 |
+|---|---|
+| Next.js 16 (App Router) · React · TypeScript · Tailwind CSS | 화면과 서버 API |
+| Supabase (PostgreSQL, RLS) | 규칙표 등 관리 표, 하루 사용 횟수 |
+| 브이월드 API · 건축HUB API | 주소 검색, 토지 정보, 건축물대장 |
+| OpenAI API | 시뮬레이션 이미지, 기대효과 문장 다듬기 |
+| `@react-pdf/renderer` · `zod` · `vitest` | PDF 생성, 입력 검사, 시험 |
+| Vercel | 배포 |
+
+## 폴더 구조
+
+```
+app/            화면(app/diagnose)과 서버 API(app/api)
+lib/            판정·계산 규칙, 공공 API·OpenAI 연결, 사용 횟수 제한 (순수 규칙은 화면 없이 시험)
+supabase/       표 만들기(migrations)와 예시 데이터(seed.sql)
+tests/          시험 (사례 25건 JSON, 공공 API 응답 기록 fixtures 포함)
+public/         글꼴(PDF용), 이미지
+PRD.md · PLAN.md · DESIGN.md · DEPLOY.md · CHECK.md   기획·설계·배포·점검 문서
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 직접 실행해 보기
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. 의존 패키지 설치: `npm install`
+2. Supabase 프로젝트를 만들고 `supabase/migrations/` 파일을 번호 순서(001 → 007)대로, 이어서 `supabase/seed.sql`을 실행합니다.
+3. `.env.example`을 `.env`로 복사해 값을 채웁니다. (필요한 키는 아래 표)
+4. 개발 서버 실행: `npm run dev` → http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| 이름 | 용도 |
+|---|---|
+| `SUPABASE_URL` · `SUPABASE_ANON_KEY` · `SUPABASE_SERVICE_ROLE_KEY` | 관리 표 읽기, 사용 횟수 기록 |
+| `OPENAI_API_KEY` (`OPENAI_TEXT_MODEL`·`OPENAI_IMAGE_MODEL`은 선택) | 이미지·문장 |
+| `VWORLD_API_KEY` · `VWORLD_DOMAIN` | 주소 검색·토지 정보 (브이월드에 등록한 서비스 주소와 같아야 함) |
+| `DATA_GO_KR_API_KEY` | 건축물대장 |
+| `IP_HASH_SALT` | 접속 주소를 해시해 사용 횟수를 세는 임의의 긴 문자열 (16자 이상) |
 
-## Learn More
+```bash
+npm test          # 시험 (공공 API·AI를 부르지 않는 시험만)
+npm run lint      # 코드 검사
+npm run build     # 배포용 빌드
+```
 
-To learn more about Next.js, take a look at the following resources:
+실제 공공 API·DB를 부르는 시험은 `RUN_LIVE_TESTS=1 npm test`로 따로 돌립니다.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 현재 상태와 알아둘 점
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- must 1·2와 배치 시뮬레이터 구현 완료, 자동 시험 통과.
+- **규칙표·시험 사례 정답은 공개된 「2024년도 국유재산 처분기준」을 바탕으로 AI가 정리한 초안**이며 담당자 확인 전입니다. 단가표·기대효과 문장 등 일부 값은 `[예시]`입니다. 실제 업무에 쓰려면 담당자 검토와 값 교체가 필요합니다.
+- 상세 검증 결과는 [`tests/cases/RESULTS.md`](tests/cases/RESULTS.md), 배포 전 점검은 [DEPLOY.md](DEPLOY.md)에 있습니다.
+- `public/brand/`의 로고·캐릭터 이미지는 한국자산관리공사의 자산이며 이 저장소의 코드와 별개입니다. 재사용하려면 해당 기관의 사용 허락이 필요합니다.

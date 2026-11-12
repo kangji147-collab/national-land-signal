@@ -5,7 +5,8 @@ import { type PickedPhoto } from "../../_components/PhotoStep";
 import { type PlacedItem, PlacementStep, toCounts } from "../../_components/PlacementStep";
 import { draw } from "../DemoProposal";
 
-const THEMES = ["공영주차장", "태양광", "스마트팜", "소공원"] as const;
+const THEMES = ["공영주차장", "태양광", "스마트팜", "소공원", "공유오피스", "청년주택", "카페/문화공간", "창고(물류)"] as const;
+const BUILDING_THEMES: readonly string[] = ["공유오피스", "청년주택", "카페/문화공간", "창고(물류)"];
 
 export function DemoPlacement() {
   const [photo, setPhoto] = useState<PickedPhoto | null>(null);
@@ -45,6 +46,7 @@ export function DemoPlacement() {
       <PlacementStep
         key={theme}
         theme={theme}
+        type={BUILDING_THEMES.includes(theme) ? "building" : "land"}
         parcelArea={412.5}
         photo={photo}
         placed={placed}

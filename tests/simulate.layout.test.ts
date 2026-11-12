@@ -52,6 +52,11 @@ describe("buildSimulatePrompt — 배치 반영", () => {
     expect(p).toContain("Draw ONLY these facilities");
     expect(p).not.toContain("second image");
   });
+  it("건물이면 '건물 주변 외부 시설만'으로 지시하고 토지 문장은 쓰지 않는다", () => {
+    const p = buildSimulatePrompt("공유오피스", "building", { plan: [{ name: "주차 1면", x: 0.2, y: 0.8 }], items: ITEMS, guideImage: true })!;
+    expect(p).toContain("exterior facilities around the building");
+    expect(p).not.toContain("Keep the rest of the land");
+  });
   it("배치가 없으면 기존 요청 글과 같다", () => {
     expect(buildSimulatePrompt("공영주차장", "land", { plan: [], items: ITEMS, guideImage: false })).toBe(buildSimulatePrompt("공영주차장", "land"));
   });
@@ -119,9 +124,23 @@ describe("POST /api/simulate — 배치", () => {
     expect(runWithUsage).not.toHaveBeenCalled();
     expect(simulateImage).not.toHaveBeenCalled();
   });
-  it("위치가 범위 밖이거나 건물 진단이면 400", async () => {
+  it("위치가 범위 밖이면 400", async () => {
     expect((await call({ ...META, layoutPlan: [{ name: "주차 1면", x: 1.5, y: 0.5 }] })).status).toBe(400);
-    expect((await call({ ...META, type: "building", theme: "공유오피스", layoutPlan: [{ name: "주차 1면", x: 0.5, y: 0.5 }] })).status).toBe(400);
+  });
+  it("건물 진단도 배치를 받고, 요청 글에 '건물 주변 외부 시설'로 들어간다", async () => {
+    vi.mocked(fetchAllowedThemes).mockResolvedValue(["공유오피스"] as never);
+    vi.mocked(fetchLayoutItems).mockResolvedValue([{ theme: "공유오피스", name: "자전거 거치대", icon: "🚲", areaM2: 6, units: 0, unitLabel: "", sortOrder: 1, descriptionEn: "a bicycle rack" }]);
+    const res = await call({ ...META, type: "building", theme: "공유오피스", answers: { ...META.answers, safety: "no" }, layoutPlan: [{ name: "자전거 거치대", x: 0.2, y: 0.8 }] });
+    expect(res.status).toBe(200);
+    const prompt = vi.mocked(simulateImage).mock.calls[0][1];
+    expect(prompt).toContain("exterior facilities around the building");
+    expect(prompt).toContain("exactly 1 × a bicycle rack");
+  });
+  it("건물 테마인데 표에 없는 시설물 이름이면 400", async () => {
+    vi.mocked(fetchAllowedThemes).mockResolvedValue(["공유오피스"] as never);
+    vi.mocked(fetchLayoutItems).mockResolvedValue([]);
+    const res = await call({ ...META, type: "building", theme: "공유오피스", answers: { ...META.answers, safety: "no" }, layoutPlan: [{ name: "주차 1면", x: 0.5, y: 0.5 }] });
+    expect(res.status).toBe(400);
   });
   it("배치도 그림이 이미지 파일이 아니면 400", async () => {
     const res = await call({ ...META, layoutPlan: [{ name: "주차 1면", x: 0.5, y: 0.5 }] }, new Uint8Array([1, 2, 3, 4]));

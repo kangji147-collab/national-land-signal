@@ -18,7 +18,7 @@ import { type QuestionAnswers, QuestionStep } from "./QuestionStep";
 import { ResultStep } from "./ResultStep";
 import { ReviewStep } from "./ReviewStep";
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7; // 6 = 배치 시뮬레이터(토지만), 7 = 제안서
+type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7; // 6 = 배치 시뮬레이터, 7 = 제안서
 
 /** 어떤 필지·종류·건물을 진단 중인지 가리키는 값 */
 const keyOf = (s: ReviewSource) => `${s.land.pnu}|${s.mode}|${s.building?.id ?? ""}`;
@@ -132,16 +132,17 @@ export function DiagnoseFlow({ type }: { type: "land" | "building" }) {
           }}
           valueText={valueText}
           onValueTextChange={setValueText}
-          // 토지는 배치 시뮬레이터를 거치고, 건물은 바로 제안서로 간다
-          onNext={() => setStep(reviewed.mode === "land" ? 6 : 7)}
+          // 토지·건물 모두 배치 시뮬레이터(6단계)를 거친다. 거기서 건너뛰고 제안서로 갈 수도 있다
+          onNext={() => setStep(6)}
           onBack={() => setStep(4)}
         />
       )}
 
-      {/* 토지만: 사진 위에 시설물을 직접 배치 (개수·면적이 예상 수익 계산에 쓰인다) */}
+      {/* 사진 위에 시설물을 직접 배치. 토지는 개수·면적이 예상 수익에 쓰이고, 건물은 건물 주변 외부 시설을 배치도·AI 이미지·PDF에 반영 */}
       {step === 6 && reviewed && theme && photo && (
         <PlacementStep
           theme={theme}
+          type={reviewed.mode}
           parcelArea={reviewed.area}
           photo={photo}
           placed={placed}
@@ -171,7 +172,7 @@ export function DiagnoseFlow({ type }: { type: "land" | "building" }) {
           onImage={(img) => setImageCache({ key: imageKey, img })}
           cached={proposalCache?.key === proposalKey ? proposalCache.data : null}
           onLoaded={(data) => setProposalCache({ key: proposalKey, data })}
-          onBack={() => setStep(reviewed.mode === "land" ? 6 : 5)}
+          onBack={() => setStep(6)}
         />
       )}
     </>

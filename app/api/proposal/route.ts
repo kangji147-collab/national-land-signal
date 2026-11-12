@@ -47,11 +47,11 @@ export async function POST(request: Request) {
       return fail("THEME_NOT_ALLOWED", "이 용도지역에서는 고를 수 없는 테마예요");
     }
 
-    // 2-1) 배치한 시설물이 있으면 시설물 표와 맞춰 보고, 면적 합이 필지 면적을 넘지 않는지 확인 (토지만)
+    // 2-1) 배치한 시설물이 있으면 시설물 표와 맞춰 보고, 면적 합이 필지 면적을 넘지 않는지 확인
+    //      (토지는 배치한 단위로 수익을 계산하고, 건물은 건물 주변 외부 시설이라 수익 계산에 들어가지 않는다)
     let layoutUnits: number | null = null;
     let layoutSummary: ReturnType<typeof summarizeLayout> | null = null;
     if (req.layout.length > 0) {
-      if (req.type !== "land") return fail("VALIDATION_ERROR", "배치는 토지 진단에서만 쓸 수 있어요");
       layoutSummary = summarizeLayout(await fetchLayoutItems(client, req.theme), req.layout);
       if (!layoutSummary.ok) return fail("VALIDATION_ERROR", layoutSummary.message);
       if (!fitsParcel(layoutSummary.totalArea, req.area)) {

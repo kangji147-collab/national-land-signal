@@ -1,5 +1,5 @@
 "use client";
-// Design Ref: §3.6-2 — ⑤-2 배치 시뮬레이터: 올린 사진 위에 시설물(지도 범례처럼)을 끌어다 놓아 본다. (🟢·토지일 때만)
+// Design Ref: §3.6-2 — ⑤-2 배치 시뮬레이터: 올린 사진 위에 시설물(지도 범례처럼)을 끌어다 놓아 본다. (🟢일 때만, 토지·건물 모두)
 //  - 시설물 이름·면적·수익 단위는 시설물 표(/api/layout-items)에서 온다. 개수·면적만 계산에 쓰고, 놓은 "위치"는 그림으로만 쓴다.
 //    (사진에는 축척이 없어서 위치로 크기를 잴 수 없다)
 //  - 마우스·터치로 끌어서 옮기고, 키보드로도 움직인다 (방향키 이동, Delete 삭제).
@@ -85,6 +85,7 @@ async function renderLayoutImage(photo: PickedPhoto, items: LayoutItem[], placed
 
 export function PlacementStep({
   theme,
+  type,
   parcelArea,
   photo,
   placed,
@@ -94,6 +95,8 @@ export function PlacementStep({
   onBack,
 }: {
   theme: string;
+  /** 토지면 배치한 개수가 예상 수익에 쓰이고, 건물이면 건물 주변 외부 시설을 배치도·이미지에 반영한다 */
+  type: "land" | "building";
   /** 확인·수정을 마친 필지 면적(㎡) */
   parcelArea: number;
   photo: PickedPhoto;
@@ -198,8 +201,17 @@ export function PlacementStep({
       <StepBar current={5} />
       <h1 className="text-2xl font-bold text-[var(--heading)]">시설물을 직접 배치해 보세요</h1>
       <p className="text-base leading-7 text-zinc-600 dark:text-zinc-400">
-        아래 시설물을 눌러 사진 위에 올리고, 끌어서 원하는 자리로 옮겨 보세요. 놓은 <strong className="font-semibold">개수와 면적</strong>이 예상 수익 계산에 쓰여요.
-        사진에는 축척이 없어서 놓은 위치는 그림으로만 쓰여요.
+        {type === "land" ? (
+          <>
+            아래 시설물을 눌러 사진 위에 올리고, 끌어서 원하는 자리로 옮겨 보세요. 놓은 <strong className="font-semibold">개수와 면적</strong>이 예상 수익 계산에 쓰여요.
+            사진에는 축척이 없어서 놓은 위치는 그림으로만 쓰여요.
+          </>
+        ) : (
+          <>
+            건물 주변에 놓을 <strong className="font-semibold">외부 시설</strong>을 눌러 사진 위에 올리고, 끌어서 원하는 자리로 옮겨 보세요. 배치도와 시뮬레이션 이미지에 반영돼요.
+            건물 예상 수익은 연면적 기준으로 그대로 계산하고, 놓은 위치는 그림으로만 쓰여요.
+          </>
+        )}
       </p>
 
       {list.phase === "loading" && (
@@ -341,7 +353,7 @@ export function PlacementStep({
             )}
             {placed.length > 0 && !hasIncomeItem && (
               <p className="text-sm text-zinc-600 dark:text-zinc-400" data-testid="no-income-note">
-                수익 계산에 쓰이는 시설물이 없어서, 예상 수익은 필지 면적 기준으로 계산해요.
+                {type === "land" ? "수익 계산에 쓰이는 시설물이 없어서, 예상 수익은 필지 면적 기준으로 계산해요." : "건물의 예상 수익은 배치와 상관없이 연면적 기준으로 계산해요."}
               </p>
             )}
           </section>

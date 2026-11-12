@@ -24,10 +24,16 @@ describe("GET /api/layout-items", () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toMatchObject({ data: { items: [{ name: "주차 1면", areaM2: 25 }] } });
   });
-  it("건물 테마·모르는 테마·빈 값은 400", async () => {
-    expect((await get(q("공유오피스"))).status).toBe(400);
+  it("건물 테마도 목록을 돌려준다 (건물 주변 외부 시설)", async () => {
+    vi.mocked(fetchLayoutItems).mockResolvedValue([{ theme: "공유오피스", name: "자전거 거치대", icon: "🚲", areaM2: 6, units: 0, unitLabel: "", sortOrder: 2 }]);
+    const res = await get(q("공유오피스"));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ data: { items: [{ name: "자전거 거치대", units: 0 }] } });
+  });
+  it("모르는 테마·빈 값은 400", async () => {
     expect((await get(q("없는테마"))).status).toBe(400);
     expect((await get("")).status).toBe(400);
+    expect(fetchLayoutItems).not.toHaveBeenCalled();
   });
   it("다른 사이트에서 온 브라우저 요청은 거절", async () => {
     expect((await get(q("공영주차장"), { "sec-fetch-site": "cross-site" })).status).toBe(403);

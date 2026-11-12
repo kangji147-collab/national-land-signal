@@ -209,7 +209,8 @@ export function ProposalStep({
             ))}
           </ul>
           <p className={noteClass}>
-            시설물 면적 합 {state.data.layout.totalArea.toLocaleString("ko-KR")}㎡ / 필지 면적 {reviewed.area.toLocaleString("ko-KR")}㎡. 사진에는 축척이 없어 놓은 위치는 참고용 그림이고, 개수와 면적이 예상 수익 계산에 쓰였어요.
+            시설물 면적 합 {state.data.layout.totalArea.toLocaleString("ko-KR")}㎡ / 필지 면적 {reviewed.area.toLocaleString("ko-KR")}㎡. 사진에는 축척이 없어 놓은 위치는 참고용 그림이에요.{" "}
+            {state.data.income.ok && state.data.income.basedOnLayout ? "개수와 면적이 예상 수익 계산에 쓰였어요." : "예상 수익은 배치와 상관없이 기존 기준(면적 또는 연면적)으로 계산했어요."}
           </p>
         </section>
       )}

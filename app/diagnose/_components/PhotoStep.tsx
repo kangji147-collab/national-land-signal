@@ -3,7 +3,7 @@
 // 사진 1장(jpg·png, 10MB 이하)을 받아 브라우저에서 약 2MB로 줄이고 미리 보여준다. (PRD 보안: 10MB 이하, 약 2MB로 줄여 전송)
 //  - 사진은 이 화면(브라우저 메모리)에만 있고, 어디에도 저장하지 않는다.
 // 같은 화면에서 개발 테마도 고른다. (작업 17번) 테마는 테마 허용표에서 이 용도지역에 허용된 것만 보여준다.
-// 건물이면 시가표준액(알면 입력)도 받는다. (작업 18번) 토지는 [다음]으로 시설물 배치(6단계)를 거쳐, 건물은 [제안서 만들기]로 바로 7단계에서 이미지·수익·기대효과를 만든다. (작업 20번)
+// 건물이면 시가표준액(알면 입력)도 받는다. (작업 18번) [다음]으로 시설물 배치(6단계)를 거친 뒤(건너뛸 수 있음) 7단계에서 이미지·수익·기대효과를 만든다. (작업 20번)
 import { useEffect, useRef, useState } from "react";
 import { MESSAGES } from "@/lib/messages";
 import { type CompressedPhoto, checkPhoto, compressImage } from "@/lib/compress-image";
@@ -257,7 +257,7 @@ export function PhotoStep({
           className="min-h-12 self-start rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:bg-zinc-300 disabled:text-zinc-600 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff] dark:disabled:bg-zinc-800 dark:disabled:text-zinc-400"
           data-testid="to-proposal"
         >
-          {type === "land" ? "다음: 시설물 직접 배치하기" : "제안서 만들기"}
+          다음: 시설물 직접 배치하기
         </button>
         {!canNext && <p className="text-sm text-zinc-600 dark:text-zinc-400">사진과 테마를 모두 고르면 이어갈 수 있어요.</p>}
         {remaining !== null && (

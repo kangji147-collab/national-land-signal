@@ -49,3 +49,9 @@ next-env.d.ts
 
 # 값 없는 이름 목록 파일은 커밋 허용
 !.env.example
+
+# 공개 저장소에 올리지 않는 것 (2026-11-12)
+/brand-source/
+/.bkit/
+/.claude/
+/tests/sample/

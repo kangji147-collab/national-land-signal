@@ -89,7 +89,9 @@ export function buildSimulatePrompt(
   ];
   if (planText) {
     parts.push(
-      "IMPORTANT: the site owner has already chosen the exact arrangement of facilities. Draw ONLY these facilities, in exactly these counts and at these positions (positions are relative to the photo frame), and do not add other major facilities. Keep the rest of the land as simple paving, gravel or lawn:",
+      type === "land"
+        ? "IMPORTANT: the site owner has already chosen the exact arrangement of facilities. Draw ONLY these facilities, in exactly these counts and at these positions (positions are relative to the photo frame), and do not add other major facilities. Keep the rest of the land as simple paving, gravel or lawn:"
+        : "IMPORTANT: the site owner has already chosen the exact arrangement of exterior facilities around the building. Besides the renovated building itself, draw ONLY these exterior facilities, in exactly these counts and at these positions (positions are relative to the photo frame), and do not add other major facilities. Keep the rest of the surroundings as simple paving or lawn:",
       planText,
     );
     if (layout?.guideImage) {

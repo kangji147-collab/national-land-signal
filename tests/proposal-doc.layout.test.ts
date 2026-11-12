@@ -40,6 +40,14 @@ describe("buildProposalDoc — 배치도", () => {
     expect(buildProposalDoc({ reviewed: LAND, proposal: proposal(null), imageIncluded: true }).layout).toBeNull();
     expect(buildProposalDoc({ reviewed: LAND, proposal: proposal({ lines: [], totalArea: 0 }), imageIncluded: true }).layout).toBeNull();
   });
+  it("수익과 연결되지 않은 배치(건물 등)면 안내 문장이 달라진다", () => {
+    const p = proposal({ lines: [{ name: "자전거 거치대", icon: "🚲", count: 2, area: 12 }], totalArea: 12 }) as unknown as { income: Record<string, unknown> };
+    p.income.basedOnLayout = false;
+    const d = buildProposalDoc({ reviewed: LAND, proposal: p as never, imageIncluded: true });
+    const last = d.layout!.lines.at(-1)!;
+    expect(last).toContain("배치와 상관없이");
+    expect(last).not.toContain("예상 수익 계산에 쓰였어요");
+  });
   it("그림을 못 넣어도 글은 들어간다", () => {
     const d = buildProposalDoc({ reviewed: LAND, proposal: proposal({ lines: [{ name: "나무", icon: "🌳", count: 2, area: 10 }], totalArea: 10 }), imageIncluded: false });
     expect(d.layout?.imageIncluded).toBe(false);

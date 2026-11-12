@@ -84,9 +84,22 @@ describe("POST /api/proposal — 배치", () => {
   it("표에 없는 시설물 이름은 400", async () => {
     expect((await call({ ...LAND, layout: [{ name: "없는 시설", count: 1 }] })).status).toBe(400);
   });
-  it("건물 진단에서는 배치를 받지 않는다 (400)", async () => {
+  it("건물 진단도 배치를 받는다: 배치도는 돌려주지만 수익은 연면적 기준 그대로", async () => {
+    const BUILDING_ITEMS = [{ theme: "공유오피스", name: "자전거 거치대", icon: "🚲", areaM2: 6, units: 0, unitLabel: "", sortOrder: 1 }];
+    vi.mocked(fetchLayoutItems).mockResolvedValue(BUILDING_ITEMS);
     const building = { ...LAND, type: "building", theme: "공유오피스", answers: { ...LAND.answers, safety: "no" }, totalFloorArea: 1000, approvalDate: "2010-01-01" };
-    expect((await call({ ...building, layout: [{ name: "주차 1면", count: 1 }] })).status).toBe(400);
+    const without = (await (await call(building)).json()).data;
+    const res = await call({ ...building, layout: [{ name: "자전거 거치대", count: 3 }] });
+    expect(res.status).toBe(200);
+    const body = (await res.json()).data;
+    expect(body.layout).toEqual({ lines: [{ name: "자전거 거치대", icon: "🚲", count: 3, area: 18 }], totalArea: 18 });
+    expect(body.income.min).toBe(without.income.min); // 수익은 배치와 상관없이 같다
+    expect(body.income.basedOnLayout).toBeFalsy();
+  });
+  it("건물도 필지 면적을 넘는 배치는 400", async () => {
+    vi.mocked(fetchLayoutItems).mockResolvedValue([{ theme: "공유오피스", name: "외부 휴게 테라스", icon: "🪑", areaM2: 400, units: 0, unitLabel: "", sortOrder: 1 }]);
+    const building = { ...LAND, type: "building", theme: "공유오피스", answers: { ...LAND.answers, safety: "no" }, totalFloorArea: 1000, approvalDate: "2010-01-01" };
+    expect((await call({ ...building, layout: [{ name: "외부 휴게 테라스", count: 2 }] })).status).toBe(400); // 800㎡ > 필지 500㎡
   });
   it("개수가 이상하면(0개·소수) 모양 검사에서 400", async () => {
     expect((await call({ ...LAND, layout: [{ name: "주차 1면", count: 0 }] })).status).toBe(400);

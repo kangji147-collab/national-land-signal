@@ -147,7 +147,9 @@ export function buildProposalDoc(opts: {
             lines: [
               ...p.layout.lines.map((l) => `${l.name} × ${l.count} (${l.area.toLocaleString("ko-KR")}㎡)`),
               `시설물 면적 합 ${p.layout.totalArea.toLocaleString("ko-KR")}㎡ / 필지 면적 ${r.area.toLocaleString("ko-KR")}㎡`,
-              "사진에는 축척이 없어 놓은 위치는 참고용 그림이며, 개수와 면적이 예상 수익 계산에 쓰였어요.",
+              p.income.ok && p.income.basedOnLayout
+                ? "사진에는 축척이 없어 놓은 위치는 참고용 그림이며, 개수와 면적이 예상 수익 계산에 쓰였어요."
+                : "사진에는 축척이 없어 놓은 위치는 참고용 그림이며, 예상 수익은 배치와 상관없이 기존 기준으로 계산했어요.",
             ],
             imageIncluded: !!opts.layoutImageIncluded,
           }
