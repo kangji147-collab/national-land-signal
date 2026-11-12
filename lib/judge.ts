@@ -5,6 +5,7 @@
 //   1) 🔴가 하나라도 있으면 🔴
 //   2) 🟡가 하나라도 있으면 🟡 (빈 값·"모르겠음"·규칙표에 없는 값 포함)
 //   3) 그 외에만 🟢
+//   (면적이 처분기준의 승인 대상 크기를 넘으면 🟡 — 규칙표 '면적' 줄)
 import { normalizeZoneName, normalizeZones } from "./normalize-zone";
 import { questionText, questionsFor } from "./questions";
 import type { Answer, Basis, JudgeInput, JudgeResult, QuestionKey, RuleCategory, RuleRow, Signal } from "./types";
@@ -59,6 +60,21 @@ function checkQuestion(key: QuestionKey, answer: Answer | null | undefined, inde
   return basis;
 }
 
+/**
+ * 면적 규칙 (2024년도 국유재산 처분기준 제5조): 필지 면적이 소재지 구분별 기준을 넘으면 총괄청 승인이 필요해 담당자 상담(🟡).
+ *  - 규칙표의 '면적' 줄을 쓴다. 이름은 "지역구분:기준면적" (예: metro:2000, other:3000)
+ *  - 면적·소재지 구분이 없거나 규칙표에 해당 줄이 없으면 적용하지 않는다. 기준 이하면 근거에 넣지 않는다.
+ */
+function checkArea(input: JudgeInput, rules: readonly RuleRow[]): Basis | null {
+  const { area, region } = input;
+  if (typeof area !== "number" || !Number.isFinite(area) || area <= 0 || !region) return null;
+  const rule = rules.find((r) => r.category === "면적" && r.name.startsWith(`${region}:`));
+  const limit = rule ? Number(rule.name.split(":")[1]) : Number.NaN;
+  if (!rule || !Number.isFinite(limit) || area <= limit) return null;
+  const n = (v: number) => v.toLocaleString("ko-KR");
+  return { kind: "면적", name: `${n(area)}㎡ (기준 ${n(limit)}㎡ 초과)`, signal: rule.signal, reason: rule.reason, baseYear: rule.base_year };
+}
+
 export function judge(input: JudgeInput, rules: readonly RuleRow[]): JudgeResult {
   const index = indexRules(rules);
   const checked: Basis[] = [];
@@ -71,6 +87,8 @@ export function judge(input: JudgeInput, rules: readonly RuleRow[]): JudgeResult
   for (const q of questionsFor(input.type)) {
     checked.push(checkQuestion(q.key, input.answers?.[q.key], index));
   }
+  const areaBasis = checkArea(input, rules);
+  if (areaBasis) checked.push(areaBasis);
 
   const has = (s: Signal) => checked.some((b) => b.signal === s);
   const signal: Signal = has("red") ? "red" : has("yellow") ? "yellow" : "green";

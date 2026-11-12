@@ -140,6 +140,48 @@ describe("신호등 판정", () => {
   });
 });
 
+describe("면적 규칙 (2024년도 국유재산 처분기준 제5조)", () => {
+  it("특별시·광역시: 2,000㎡ 이하는 🟢, 초과하면 🟡 (근거에 면적과 기준이 나온다)", () => {
+    expect(judge(land({ area: 2000, region: "metro" }), rules).signal).toBe("green");
+    const r = judge(land({ area: 2000.1, region: "metro" }), rules);
+    expect(r.signal).toBe("yellow");
+    const b = r.reasons.find((x) => x.kind === "면적");
+    expect(b?.name).toContain("2,000㎡");
+    expect(b?.reason).toContain("총괄청");
+  });
+
+  it("그 밖의 시·시 외 지역: 3,000㎡ 이하는 🟢, 초과하면 🟡", () => {
+    expect(judge(land({ area: 3000, region: "other" }), rules).signal).toBe("green");
+    expect(judge(land({ area: 3001, region: "other" }), rules).signal).toBe("yellow");
+    // 같은 2,500㎡라도 광역시는 🟡, 그 밖의 지역은 🟢
+    expect(judge(land({ area: 2500, region: "metro" }), rules).signal).toBe("yellow");
+    expect(judge(land({ area: 2500, region: "other" }), rules).signal).toBe("green");
+  });
+
+  it("면적이나 소재지 구분이 없으면 면적 규칙을 적용하지 않는다", () => {
+    expect(judge(land({ area: 999999 }), rules).signal).toBe("green");
+    expect(judge(land({ region: "metro" }), rules).signal).toBe("green");
+    expect(judge(land({ area: Number.NaN, region: "metro" }), rules).signal).toBe("green");
+  });
+
+  it("🔴가 있으면 면적이 커도 🔴 (면적 규칙은 🟡만 더한다)", () => {
+    expect(judge(land({ landCategory: "하천", area: 99999, region: "metro" }), rules).signal).toBe("red");
+  });
+
+  it("기준 면적은 규칙표 줄에서 읽는다 (관리자가 고치면 따라간다)", () => {
+    const custom = rules.map((r) => (r.category === "면적" && r.name === "metro:2000" ? { ...r, name: "metro:1000" } : r));
+    expect(judge(land({ area: 1500, region: "metro" }), custom).signal).toBe("yellow");
+    // 규칙표에 면적 줄이 아예 없으면 적용하지 않는다
+    expect(judge(land({ area: 99999, region: "metro" }), rules.filter((r) => r.category !== "면적")).signal).toBe("green");
+  });
+
+  it("상수원 관련 구역(수변구역·수질보전특별대책지역·상수원보호구역)은 🟡 (처분기준 제4조①6)", () => {
+    for (const z of ["수변구역", "수질보전특별대책지역", "상수원보호구역"]) {
+      expect(judge(land({ otherZones: [z] }), rules).signal, z).toBe("yellow");
+    }
+  });
+});
+
 describe("위험한 오판정 0건 (전수 시험)", () => {
   const byCat = (c: RuleRow["category"]) => rules.filter((r) => r.category === c);
 

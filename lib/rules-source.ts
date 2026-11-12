@@ -23,7 +23,7 @@ export interface Contact {
   hours: string;
 }
 
-const CATEGORIES: readonly RuleCategory[] = ["지목", "용도지역", "지역지구", "질문"];
+const CATEGORIES: readonly RuleCategory[] = ["지목", "용도지역", "지역지구", "질문", "면적"];
 const SIGNALS: readonly Signal[] = ["green", "yellow", "red"];
 
 // Supabase 는 한 번에 최대 1000줄까지만 돌려준다. 그만큼 받았다면 뒤가 잘렸을 수 있으므로 오류로 본다.

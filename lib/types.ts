@@ -3,7 +3,9 @@
 export type Signal = "green" | "yellow" | "red";
 export type PropertyType = "land" | "building";
 export type Answer = "yes" | "no" | "unknown";
-export type RuleCategory = "지목" | "용도지역" | "지역지구" | "질문";
+export type RuleCategory = "지목" | "용도지역" | "지역지구" | "질문" | "면적";
+/** 소재지 구분: metro = 특별시·광역시, other = 그 밖의 시·시 외 지역 (면적 규칙의 기준이 다르다) */
+export type Region = "metro" | "other";
 
 /** 규칙표(Supabase `rules`) 한 줄 */
 export interface RuleRow {
@@ -24,6 +26,9 @@ export interface JudgeInput {
   zone: string; // 용도지역
   otherZones: string[]; // 다른 법령 지역·지구 (괄호·법령 이름이 붙은 원문이어도 됨)
   answers: Partial<Record<QuestionKey, Answer | null>>;
+  /** 필지 면적(㎡) — 면적 규칙(처분기준 제5조)에 쓴다. 없으면 면적 규칙을 적용하지 않는다 */
+  area?: number | null;
+  region?: Region;
 }
 
 /** 판정 근거 한 줄 */

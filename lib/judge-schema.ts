@@ -12,6 +12,9 @@ export const JudgeRequestSchema = z.object({
   otherZones: z.array(z.string().max(100)).max(200),
   // 알 수 없는 질문 키는 버린다(zod 기본). 값이 비면 "답 없음"으로 판정(🟡)된다.
   answers: z.object({ onbid: Answer, dispute: Answer, inUse: Answer, safety: Answer }),
+  // 면적 규칙(처분기준 제5조)용. 없으면 면적 규칙을 적용하지 않는다
+  area: z.number().finite().positive().max(1e9).optional(),
+  region: z.enum(["metro", "other"]).optional(),
 });
 
 export type ParsedJudgeRequest = z.infer<typeof JudgeRequestSchema>;
@@ -24,5 +27,7 @@ export function toJudgeInput(req: ParsedJudgeRequest): JudgeInput {
     zone: req.zone,
     otherZones: req.otherZones,
     answers: req.answers,
+    area: req.area,
+    region: req.region,
   };
 }

@@ -6,13 +6,14 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { judge } from "../lib/judge";
+import { regionOf } from "../lib/judge-request";
 import type { Answer, JudgeInput, QuestionKey, Signal } from "../lib/types";
 import { loadSeedRules } from "./helpers/load-seed-rules";
 
 interface CaseFile {
   id: string;
   type: "land" | "building";
-  extracted: { landCategory?: string; zone?: string; otherZones?: string[] };
+  extracted: { address?: string; area?: number | null; landCategory?: string; zone?: string; otherZones?: string[] };
   answers: Partial<Record<QuestionKey, Answer | null>>;
   expectedSignal: Signal | null;
 }
@@ -42,6 +43,9 @@ const run = (c: CaseFile) => {
     zone: c.extracted.zone ?? "",
     otherZones: c.extracted.otherZones ?? [],
     answers: c.answers,
+    // 면적 규칙(처분기준 제5조): 사례에 면적이 있으면 함께 판정한다
+    area: c.extracted.area ?? null,
+    region: regionOf(c.extracted.address ?? ""),
   };
   return judge(input, rules).signal;
 };

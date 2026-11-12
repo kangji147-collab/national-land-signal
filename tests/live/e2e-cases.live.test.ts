@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 import { describe, expect, it } from "vitest";
 import { judge } from "../../lib/judge";
+import { regionOf } from "../../lib/judge-request";
 import { lookupBuildings, lookupLand, searchAddress } from "../../lib/public-api";
 import { fetchRules } from "../../lib/rules-source";
 import type { Answer, QuestionKey, Signal } from "../../lib/types";
@@ -87,7 +88,15 @@ async function runCase(c: CaseFile, rules: Awaited<ReturnType<typeof fetchRules>
       note = `건물 ${b.buildings.length}동`;
     }
     const result = judge(
-      { type: c.type, landCategory: land.info.landCategory, zone: land.info.zone, otherZones: land.info.zones, answers: c.answers },
+      {
+        type: c.type,
+        landCategory: land.info.landCategory,
+        zone: land.info.zone,
+        otherZones: land.info.zones,
+        answers: c.answers,
+        area: land.info.area, // 화면과 같이 조회한 면적·소재지로 면적 규칙까지 판정
+        region: regionOf(land.info.address),
+      },
       rules,
     );
     const actual = result.signal;
