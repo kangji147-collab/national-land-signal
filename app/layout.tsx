@@ -6,7 +6,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: `${SERVICE_NAME} — 국유재산 매각 가능 여부 자가진단`,
-  description: "서류만 올리면 국유지·국유 건물의 매각 가능 여부를 신호등으로 알려드려요",
+  description: "주소만 입력하면 국유지·국유 건물의 매각 가능 여부를 신호등으로 알려드려요",
 };
 
 // Design Ref: §3 — 모든 화면 공통: 위쪽 서비스 이름, 아래쪽 참고용 안내 문구
