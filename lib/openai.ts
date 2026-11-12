@@ -5,7 +5,7 @@ import OpenAI, { toFile } from "openai";
 import type { PolishMessages } from "./effects";
 
 /** 문장 다듬기에 쓰는 모델. 환경 변수 OPENAI_TEXT_MODEL 로 바꿀 수 있다 (작고 값싼 모델이면 충분) */
-export const DEFAULT_TEXT_MODEL = "gpt-5.4-mini";
+export const DEFAULT_TEXT_MODEL = "gpt-4o-mini";
 
 /** AI 호출 한 번에 기다리는 최대 시간(ms). 넘으면 문장표 기본 문장을 쓴다 */
 export const POLISH_TIMEOUT_MS = 12_000;

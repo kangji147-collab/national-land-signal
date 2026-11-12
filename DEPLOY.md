@@ -21,7 +21,7 @@
 | `SUPABASE_ANON_KEY` | 예 | 규칙표 읽기(웹은 읽기만) | 있음 |
 | `SUPABASE_SERVICE_ROLE_KEY` | 예 | 사용 횟수 기록 | 있음 |
 | `OPENAI_API_KEY` | 예 | 기대효과 문장·시뮬레이션 이미지 | 있음 |
-| `OPENAI_TEXT_MODEL` | 아니오 | 비우면 `gpt-5.4-mini` | (비움) |
+| `OPENAI_TEXT_MODEL` | 아니오 | 비우면 `gpt-4o-mini` | (비움) |
 | `OPENAI_IMAGE_MODEL` | 아니오 | 비우면 `gpt-image-2` | (비움) |
 | `VWORLD_API_KEY` | 예 | 주소 검색·토지 정보 | 있음 |
 | `VWORLD_DOMAIN` | 예 | 브이월드에 등록한 서비스 주소 (**배포 주소로 바꿔야 함**) | 있음(localhost) |
@@ -36,7 +36,7 @@ CLI 작업용(`SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASS
 2. **접속 주소 헤더 확인** — `lib/usage-limit.ts`의 `getClientIp`는 `x-vercel-forwarded-for` → `x-real-ip` → `x-forwarded-for` 순으로 읽는다. Vercel 문서로 이 순서가 맞는지(그리고 사용자가 보낸 값이 덮어써지는지) 확인하고, 배포 후 두 기기에서 횟수가 따로 세어지는지 시험한다. 헤더를 못 읽으면 모두 `unknown` 한 칸으로 합쳐져 하루 한도를 함께 쓰게 된다.
 3. **함수 실행 시간 한도 확인** — `/api/simulate`는 `maxDuration = 120`(초)이다. 이미지는 보통 약 30초지만, 사용 중인 Vercel 요금제에서 120초가 허용되는지 확인한다. 허용되지 않으면 값을 낮추고 `lib/openai.ts`의 `IMAGE_TIMEOUT_MS`(100초)도 같이 줄인다.
 4. **임시 값 교체** — 상담 연락처(1588-3570으로 교체 완료, 운영 시간은 미확인), 단가표·기대효과 문장의 `[예시]` 값, 매수 신청 안내 문구(`lib/messages.ts`, 임시 작성).
-5. **OpenAI 비용 확인** — 문장(`gpt-5.4-mini`)·이미지(`gpt-image-2`) 1회당 비용을 가격표로 확인하고 사용 한도(하루 5회/접속 주소)가 적당한지 본다.
+5. **OpenAI 비용 확인** — 문장(`gpt-4o-mini`)·이미지(`gpt-image-2`) 1회당 비용을 가격표로 확인하고 사용 한도(하루 5회/접속 주소)가 적당한지 본다.
 6. **판정 정확도 확인** — 시험 사례 20건 정답을 넣고 `tests/cases/RESULTS.md` 절차로 일치율·위험한 오판정을 확인한다. (작업 22번 진행 중)
 
 ## 배포 순서 (CLAUDE.md 4-5 방식: `.env`의 `VERCEL_TOKEN` 사용)
