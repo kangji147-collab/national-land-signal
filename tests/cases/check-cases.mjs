@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 const casesDir = dirname(fileURLToPath(import.meta.url));
 const root = resolve(casesDir, "..", "..");
 
-const WANT = { land: 15, building: 5 };
+const WANT = { land: 20, building: 5 }; // 토지 20 = 처음 15건 + 🟢 기능 시험용 5건(land-16~20, 2026-11-12 추가)
 const SIGNALS = ["green", "yellow", "red"];
 const SIGNAL_ICON = { green: "🟢", yellow: "🟡", red: "🔴" };
 const ANSWERS = ["yes", "no", "unknown"];

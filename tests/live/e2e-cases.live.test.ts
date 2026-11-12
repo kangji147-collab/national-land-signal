@@ -128,6 +128,6 @@ describe.skipIf(!enabled)(`주소 조회~판정 이어서 시험 (준비된 사�
     // 위험한 오판정은 사례가 몇 건이든 0건이어야 한다
     expect(dangerous).toBe(0);
     // 20건이 모두 준비되었을 때만 일치율 목표를 실패 기준으로 삼는다
-    if (ready.length === 20) expect(rate).toBeGreaterThanOrEqual(90);
+    if (ready.length >= 20) expect(rate).toBeGreaterThanOrEqual(90);
   }, 600_000);
 });

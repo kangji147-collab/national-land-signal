@@ -64,10 +64,11 @@ describe(`시험 사례 판정 (준비된 사례 ${ready.length}/${all.length}�
     });
   }
 
-  if (ready.length === 20) {
-    it("일치율 90% 이상 (20건 기준 18건 이상)", () => {
+  // 20건 이상 준비되면 일치율 90% 이상을 확인한다 (사례가 늘어도 같은 비율)
+  if (ready.length >= 20) {
+    it(`일치율 90% 이상 (${ready.length}건 기준 ${Math.ceil(ready.length * 0.9)}건 이상)`, () => {
       const match = ready.filter((c) => run(c) === c.expectedSignal).length;
-      expect(match).toBeGreaterThanOrEqual(18);
+      expect(match).toBeGreaterThanOrEqual(Math.ceil(ready.length * 0.9));
     });
   }
 });
