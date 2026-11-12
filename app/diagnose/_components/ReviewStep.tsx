@@ -20,7 +20,7 @@ import {
 import { StepBar } from "./StepBar";
 
 const INPUT =
-  "min-h-12 w-full rounded-xl border-2 border-zinc-300 bg-white px-4 text-base focus-visible:border-sky-600 focus-visible:outline-none aria-[invalid=true]:border-red-500 dark:border-zinc-700 dark:bg-zinc-900";
+  "min-h-12 w-full rounded-sm border-2 border-zinc-300 bg-white px-4 text-base focus-visible:border-sky-600 focus-visible:outline-none aria-[invalid=true]:border-red-500 dark:border-zinc-700 dark:bg-zinc-900";
 
 // 수정 기록 항목 → 되돌릴 입력칸
 const FIELDS_OF: Record<EditedKey, (keyof ReviewForm)[]> = {
@@ -179,14 +179,14 @@ export function ReviewStep({
       <StepBar current={2} />
 
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold">가져온 내용을 확인하고, 틀리면 고쳐 주세요</h1>
+        <h1 className="text-2xl font-bold text-[var(--heading)]">가져온 내용을 확인하고, 틀리면 고쳐 주세요</h1>
         <p className="text-base leading-7 text-zinc-600 dark:text-zinc-400">
           판정은 여기에 적힌 값으로만 해요. 고친 곳은 결과와 제안서에 &quot;{MESSAGES.userEdited}&quot;으로 표시돼요.
         </p>
       </div>
 
       <form ref={formRef} onSubmit={submit} noValidate className="flex flex-col gap-6">
-        <fieldset className="flex flex-col gap-5 rounded-xl border border-zinc-300 p-4 dark:border-zinc-700">
+        <fieldset className="k-card flex flex-col gap-5">
           <legend className="px-2 text-lg font-semibold">토지 정보</legend>
 
           <Field {...bind("address", "address")} label="소재지" error={errors.address} />
@@ -224,7 +224,7 @@ export function ReviewStep({
                           form.zones.filter((x) => x !== z),
                         )
                       }
-                      className="grid size-7 place-items-center rounded-full hover:bg-zinc-300 focus-visible:outline-3 focus-visible:outline-sky-600 dark:hover:bg-zinc-700"
+                      className="grid size-7 place-items-center rounded-full hover:bg-zinc-300 focus-visible:outline-3 focus-visible:outline-sky-600 dark:hover:bg-[var(--blue)]"
                     >
                       ×
                     </button>
@@ -253,7 +253,7 @@ export function ReviewStep({
               <button
                 type="button"
                 onClick={addZone}
-                className="min-h-12 shrink-0 rounded-xl border-2 border-zinc-900 px-4 text-base font-semibold hover:bg-zinc-100 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-100 dark:hover:bg-zinc-800"
+                className="min-h-12 shrink-0 rounded-sm border-2 border-zinc-900 px-4 text-base font-semibold hover:bg-zinc-100 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-100 dark:hover:bg-zinc-800"
               >
                 추가
               </button>
@@ -267,7 +267,7 @@ export function ReviewStep({
         </fieldset>
 
         {mode === "building" && source.building && (
-          <fieldset className="flex flex-col gap-5 rounded-xl border border-zinc-300 p-4 dark:border-zinc-700">
+          <fieldset className="k-card flex flex-col gap-5">
             <legend className="px-2 text-lg font-semibold">건물 정보 (건축물대장)</legend>
             <p className="-mt-2 text-sm text-zinc-600 dark:text-zinc-400">{source.building.label}</p>
 
@@ -300,7 +300,7 @@ export function ReviewStep({
         )}
 
         {edited.size > 0 && (
-          <p className="rounded-xl bg-amber-50 px-4 py-3 text-base text-amber-950 dark:bg-amber-950/40 dark:text-amber-100">
+          <p className="rounded-sm bg-amber-50 px-4 py-3 text-base text-amber-950 dark:bg-amber-950/40 dark:text-amber-100">
             ✏️ 고친 항목: <strong className="font-semibold">{editedList.join(", ")}</strong>
           </p>
         )}
@@ -309,13 +309,13 @@ export function ReviewStep({
           <button
             type="button"
             onClick={onBack}
-            className="min-h-12 rounded-xl border-2 border-zinc-300 px-6 text-base font-semibold hover:border-zinc-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-700 dark:hover:border-zinc-200"
+            className="min-h-12 rounded-sm border-2 border-[var(--navy)] px-6 text-base font-semibold text-[var(--heading)] hover:bg-[var(--panel)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-[var(--blue)]"
           >
             ← 주소 다시 고르기
           </button>
           <button
             type="submit"
-            className="min-h-12 rounded-xl bg-zinc-900 px-6 text-base font-semibold text-white hover:bg-zinc-700 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="min-h-12 rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff]"
           >
             다음: 질문에 답하기
           </button>

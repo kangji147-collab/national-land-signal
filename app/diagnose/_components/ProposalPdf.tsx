@@ -15,24 +15,27 @@ Font.register({ family: "NotoSansKR", src: FONT_SRC });
 // 단어 가운데서 끊지 않는다 (한글은 띄어쓰기 기준으로만 줄바꿈)
 Font.registerHyphenationCallback((word) => [word]);
 
+const NAVY = "#08205e";
 const INK = "#18181b";
 const MUTED = "#52525b";
 const LINE = "#d4d4d8";
 
 const s = StyleSheet.create({
   page: { fontFamily: "NotoSansKR", fontSize: 10, color: INK, paddingTop: 36, paddingBottom: 56, paddingHorizontal: 36, lineHeight: 1.5 },
-  service: { fontSize: 9, color: MUTED },
+  // 맨 위 짙은 남색 띠 (쪽 가장자리까지 채운다)
+  band: { backgroundColor: NAVY, marginHorizontal: -36, marginTop: -36, paddingHorizontal: 36, paddingTop: 22, paddingBottom: 14, marginBottom: 12 },
+  service: { fontSize: 9, color: "#c9d4f2" },
   // 큰 글씨는 줄 높이를 직접 정하고 아래 여백을 둔다 (Noto Sans KR 은 글자 위아래 여유가 커서 기본 줄 간격이면 다음 줄과 겹친다)
-  title: { fontSize: 22, lineHeight: 1.6, marginTop: 2, marginBottom: 6 },
-  sub: { fontSize: 11, lineHeight: 1.6, color: MUTED, marginTop: 4 },
+  title: { fontSize: 22, lineHeight: 1.6, marginTop: 2, marginBottom: 6, color: "#ffffff" },
+  sub: { fontSize: 11, lineHeight: 1.6, color: "#e3e9fa", marginTop: 4 },
   rule: { borderBottomWidth: 1, borderBottomColor: LINE, marginVertical: 10 },
   siteRow: { flexDirection: "row", marginBottom: 1 },
   siteLabel: { width: 70, color: MUTED },
   siteValue: { flex: 1 },
   warn: { borderWidth: 1, borderColor: "#d97706", backgroundColor: "#fffbeb", padding: 6, marginTop: 8 },
-  section: { marginTop: 12, padding: 10, borderWidth: 1, borderColor: LINE },
-  h2: { fontSize: 13, lineHeight: 1.6, marginBottom: 6 },
-  headline: { fontSize: 16, lineHeight: 1.6, marginBottom: 6 },
+  section: { marginTop: 12, padding: 10, borderWidth: 1, borderColor: LINE, borderTopWidth: 3, borderTopColor: NAVY },
+  h2: { fontSize: 13, lineHeight: 1.6, marginBottom: 6, color: NAVY },
+  headline: { fontSize: 16, lineHeight: 1.6, marginBottom: 6, color: NAVY },
   note: { fontSize: 9, color: MUTED },
   mark: { fontSize: 9, marginTop: 2 },
   images: { flexDirection: "row", gap: 8 },
@@ -65,12 +68,13 @@ export function ProposalPdf({ doc, photoUrl, afterUrl }: { doc: ProposalDoc; pho
   return (
     <Document title={`${doc.title} - ${doc.theme}`} author={doc.serviceName} language="ko">
       <Page size="A4" style={s.page}>
-        <Text style={s.service}>{doc.serviceName}</Text>
-        <Text style={s.title}>{doc.title}</Text>
-        <Text style={s.sub}>
-          개발 테마: {doc.theme} · 작성일 {doc.dateText}
-        </Text>
-        <View style={s.rule} />
+        <View style={s.band}>
+          <Text style={s.service}>{doc.serviceName}</Text>
+          <Text style={s.title}>{doc.title}</Text>
+          <Text style={s.sub}>
+            개발 테마: {doc.theme} · 작성일 {doc.dateText}
+          </Text>
+        </View>
 
         {doc.site.map((row) => (
           <View key={row.label} style={s.siteRow}>

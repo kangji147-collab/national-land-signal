@@ -19,7 +19,7 @@ export function ErrorNotice({
     : "border-red-300 bg-red-50 text-red-900 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100";
 
   return (
-    <div role="alert" className={`flex flex-col gap-2 rounded-xl border px-4 py-3 ${tone}`}>
+    <div role="alert" className={`flex flex-col gap-2 rounded-sm border px-4 py-3 ${tone}`}>
       <p className="text-base font-medium">{error.message}</p>
       {info.hint && <p className="text-sm">{info.hint}</p>}
       {(showRetry || children) && (
@@ -28,7 +28,7 @@ export function ErrorNotice({
             <button
               type="button"
               onClick={onRetry}
-              className="min-h-11 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-700 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+              className="min-h-11 rounded-sm bg-[var(--navy)] px-4 text-sm font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff]"
             >
               다시 시도
             </button>

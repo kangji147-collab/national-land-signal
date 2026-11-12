@@ -191,7 +191,7 @@ export function AddressStep({
       <StepBar current={1} />
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold">{typeLabel}</h1>
+        <h1 className="text-2xl font-bold text-[var(--heading)]">{typeLabel}</h1>
         <Link
           href="/"
           className="text-sm text-zinc-600 underline underline-offset-4 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
@@ -215,12 +215,12 @@ export function AddressStep({
             autoComplete="off"
             placeholder="예) 서울특별시 중구 태평로1가 31"
             aria-describedby="address-help"
-            className="min-h-12 flex-1 rounded-xl border-2 border-zinc-300 bg-white px-4 text-base focus-visible:border-sky-600 focus-visible:outline-none dark:border-zinc-700 dark:bg-zinc-900"
+            className="min-h-12 flex-1 rounded-sm border-2 border-zinc-300 bg-white px-4 text-base focus-visible:border-sky-600 focus-visible:outline-none dark:border-zinc-700 dark:bg-zinc-900"
           />
           <button
             type="submit"
             disabled={searchPhase === "loading" || searchBlocked}
-            className="min-h-12 rounded-xl bg-zinc-900 px-6 text-base font-semibold text-white hover:bg-zinc-700 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="min-h-12 rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-60 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff]"
           >
             {searchPhase === "loading" ? "찾는 중…" : "검색"}
           </button>
@@ -258,7 +258,7 @@ export function AddressStep({
               {candidates.map((c) => (
                 <li key={c.pnu}>
                   <label
-                    className={`flex cursor-pointer items-start gap-3 rounded-xl border-2 p-4 ${
+                    className={`flex cursor-pointer items-start gap-3 rounded-sm border-2 p-4 ${
                       selected === c.pnu
                         ? "border-sky-600 bg-sky-50 dark:bg-sky-950/40"
                         : "border-zinc-300 hover:border-zinc-500 dark:border-zinc-700"
@@ -291,7 +291,7 @@ export function AddressStep({
       </div>
 
       {chosen && (
-        <section className="flex flex-col gap-3 rounded-xl border border-zinc-300 p-4 dark:border-zinc-700" aria-label="선택한 필지">
+        <section className="k-card flex flex-col gap-3" aria-label="선택한 필지">
           <p className="text-base">
             선택한 필지: <strong className="font-semibold">{chosen.label}</strong>
           </p>
@@ -299,7 +299,7 @@ export function AddressStep({
             type="button"
             onClick={() => fetchLand(chosen.pnu)}
             disabled={lookupPhase === "loading" || lookupBlocked}
-            className="min-h-12 self-start rounded-xl bg-zinc-900 px-6 text-base font-semibold text-white hover:bg-zinc-700 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="min-h-12 self-start rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-60 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff]"
           >
             {lookupPhase === "loading" ? "공공 정보를 가져오고 있어요…" : "정보 가져오기"}
           </button>
@@ -320,7 +320,7 @@ export function AddressStep({
             <button
               type="button"
               onClick={() => continueAsLand(lookupError.land as LandInfo)}
-              className="min-h-11 rounded-lg border-2 border-zinc-900 px-4 text-sm font-semibold hover:bg-zinc-100 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-100 dark:hover:bg-zinc-800"
+              className="min-h-11 rounded-sm border-2 border-zinc-900 px-4 text-sm font-semibold hover:bg-zinc-100 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-100 dark:hover:bg-zinc-800"
             >
               토지 진단으로 진행하기
             </button>
@@ -329,8 +329,8 @@ export function AddressStep({
       )}
 
       {land && (
-        <section aria-label="가져온 토지 정보" className="flex flex-col gap-3 rounded-xl border-2 border-sky-600 p-4">
-          <h2 className="text-lg font-semibold">가져온 토지 정보</h2>
+        <section aria-label="가져온 토지 정보" className="flex flex-col gap-3 rounded-sm border-2 border-sky-600 p-4">
+          <h2 className="k-h2">가져온 토지 정보</h2>
           {switchedToLand && (
             <p className="text-sm text-zinc-600 dark:text-zinc-400">건축물대장이 없어 토지 진단으로 이어가요.</p>
           )}
@@ -377,8 +377,8 @@ export function AddressStep({
       )}
 
       {land && mode === "building" && buildings && (
-        <section aria-label="건물 정보" className="flex flex-col gap-3 rounded-xl border-2 border-sky-600 p-4">
-          <h2 className="text-lg font-semibold">건물 정보 (건축물대장)</h2>
+        <section aria-label="건물 정보" className="flex flex-col gap-3 rounded-sm border-2 border-sky-600 p-4">
+          <h2 className="k-h2">건물 정보 (건축물대장)</h2>
           <fieldset className="flex flex-col gap-2">
             <legend className="mb-1 text-base font-medium">
               {buildings.length > 1 ? `이 필지에는 건물이 여러 동 있어요. 1개를 고르세요` : "이 필지의 건물이에요"}
@@ -392,7 +392,7 @@ export function AddressStep({
               {buildings.map((b) => (
                 <li key={b.id}>
                   <label
-                    className={`flex cursor-pointer items-start gap-3 rounded-xl border-2 p-3 ${
+                    className={`flex cursor-pointer items-start gap-3 rounded-sm border-2 p-3 ${
                       selectedBuilding === b.id
                         ? "border-sky-600 bg-sky-50 dark:bg-sky-950/40"
                         : "border-zinc-300 hover:border-zinc-500 dark:border-zinc-700"
@@ -471,7 +471,7 @@ export function AddressStep({
                   type="button"
                   disabled={needBuilding}
                   onClick={() => onNext({ mode, land, building: mode === "building" ? building : null })}
-                  className="min-h-12 self-start rounded-xl bg-zinc-900 px-6 text-base font-semibold text-white hover:bg-zinc-700 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+                  className="min-h-12 self-start rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-60 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff]"
                 >
                   다음: 가져온 내용 확인하기
                 </button>

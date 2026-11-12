@@ -129,11 +129,11 @@ export function PhotoStep({
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8 sm:py-10">
       <StepBar current={5} />
-      <h1 className="text-2xl font-bold">현장 사진을 올려 주세요</h1>
+      <h1 className="text-2xl font-bold text-[var(--heading)]">현장 사진을 올려 주세요</h1>
       <p className="text-base leading-7 text-zinc-600 dark:text-zinc-400">
         사진 1장으로 개발 후 모습을 보여 드려요. jpg 또는 png, 10MB 이하만 올릴 수 있어요.
       </p>
-      <p className="rounded-xl bg-amber-50 px-4 py-3 text-base text-amber-950 dark:bg-amber-950/40 dark:text-amber-100" data-testid="photo-notice">
+      <p className="rounded-sm bg-amber-50 px-4 py-3 text-base text-amber-950 dark:bg-amber-950/40 dark:text-amber-100" data-testid="photo-notice">
         📷 {MESSAGES.photoNotice}
       </p>
 
@@ -153,7 +153,7 @@ export function PhotoStep({
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={busy}
-            className="min-h-12 rounded-xl bg-zinc-900 px-6 text-base font-semibold text-white hover:bg-zinc-700 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="min-h-12 rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-50 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff]"
           >
             {photo ? "다른 사진 고르기" : "사진 고르기"}
           </button>
@@ -162,7 +162,7 @@ export function PhotoStep({
               type="button"
               onClick={remove}
               disabled={busy}
-              className="min-h-12 rounded-xl border-2 border-zinc-300 px-6 text-base font-semibold hover:border-zinc-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-50 dark:border-zinc-700 dark:hover:border-zinc-200"
+              className="min-h-12 rounded-sm border-2 border-[var(--navy)] px-6 text-base font-semibold text-[var(--heading)] hover:bg-[var(--panel)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-50 dark:border-[var(--blue)]"
             >
               사진 빼기
             </button>
@@ -175,7 +175,7 @@ export function PhotoStep({
           </p>
         )}
         {error && (
-          <p role="alert" className="rounded-xl border-2 border-red-500 bg-red-50 px-4 py-3 text-base text-red-950 dark:bg-red-950/40 dark:text-red-100" data-testid="photo-error">
+          <p role="alert" className="rounded-sm border-2 border-red-500 bg-red-50 px-4 py-3 text-base text-red-950 dark:bg-red-950/40 dark:text-red-100" data-testid="photo-error">
             {error}
           </p>
         )}
@@ -185,7 +185,7 @@ export function PhotoStep({
         <figure className="flex flex-col gap-2" data-testid="photo-preview">
           {/* 미리보기는 브라우저 안의 임시 주소(blob:)라서 next/image 를 쓰지 않는다 */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photo.previewUrl} alt="올린 현장 사진 미리보기" className="max-h-96 w-full rounded-xl border border-zinc-300 object-contain dark:border-zinc-700" />
+          <img src={photo.previewUrl} alt="올린 현장 사진 미리보기" className="max-h-96 w-full rounded-sm border border-zinc-300 object-contain dark:border-zinc-700" />
           <figcaption className="text-sm text-zinc-600 dark:text-zinc-400" data-testid="photo-info">
             원본 {formatBytes(photo.originalBytes)} → 전송용 {formatBytes(photo.blob.size)} ({photo.width}×{photo.height})
           </figcaption>
@@ -201,7 +201,7 @@ export function PhotoStep({
         )}
         {list.phase === "error" && <ErrorNotice error={list.error} onRetry={() => { setList({ phase: "loading" }); setAttempt((n) => n + 1); }} />}
         {list.phase === "done" && list.themes.length === 0 && (
-          <p className="rounded-xl border-2 border-amber-500 px-4 py-3 text-base" data-testid="no-themes">
+          <p className="rounded-sm border-2 border-amber-500 px-4 py-3 text-base" data-testid="no-themes">
             이 용도지역에서 고를 수 있는 테마가 없어요. 담당자에게 문의해 주세요.
           </p>
         )}
@@ -210,8 +210,8 @@ export function PhotoStep({
             {list.themes.map((t) => (
               <label
                 key={t}
-                className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 text-base font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-sky-600 ${
-                  theme === t ? "border-emerald-600 bg-emerald-50 text-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-50" : "border-zinc-300 hover:border-zinc-900 dark:border-zinc-700 dark:hover:border-zinc-200"
+                className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-sm border-2 px-4 py-3 text-base font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-sky-600 ${
+                  theme === t ? "border-emerald-600 bg-emerald-50 text-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-50" : "border-zinc-300 hover:border-zinc-900 dark:border-[var(--blue)]"
                 }`}
               >
                 <input type="radio" name="theme" value={t} checked={theme === t} onChange={() => onThemeChange(t)} className="size-5 accent-emerald-700" />
@@ -235,7 +235,7 @@ export function PhotoStep({
             placeholder="예: 150000000"
             aria-describedby="standard-value-help"
             aria-invalid={!!valueCheck.error}
-            className="min-h-12 max-w-sm rounded-xl border-2 border-zinc-300 bg-transparent px-4 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-700"
+            className="min-h-12 max-w-sm rounded-sm border-2 border-zinc-300 bg-transparent px-4 text-base focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-700"
             data-testid="standard-value"
           />
           <p id="standard-value-help" className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -254,7 +254,7 @@ export function PhotoStep({
           type="button"
           disabled={!canNext}
           onClick={onNext}
-          className="min-h-12 self-start rounded-xl bg-zinc-900 px-6 text-base font-semibold text-white hover:bg-zinc-700 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:bg-zinc-300 disabled:text-zinc-600 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-400"
+          className="min-h-12 self-start rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:bg-zinc-300 disabled:text-zinc-600 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff] dark:disabled:bg-zinc-800 dark:disabled:text-zinc-400"
           data-testid="to-proposal"
         >
           제안서 만들기
@@ -273,7 +273,7 @@ export function PhotoStep({
         <button
           type="button"
           onClick={onBack}
-          className="min-h-12 rounded-xl border-2 border-zinc-300 px-6 text-base font-semibold hover:border-zinc-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-700 dark:hover:border-zinc-200"
+          className="min-h-12 rounded-sm border-2 border-[var(--navy)] px-6 text-base font-semibold text-[var(--heading)] hover:bg-[var(--panel)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-[var(--blue)]"
         >
           ← 판정 결과로 돌아가기
         </button>

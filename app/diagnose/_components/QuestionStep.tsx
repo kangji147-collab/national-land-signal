@@ -52,7 +52,7 @@ export function QuestionStep({
       <StepBar current={3} />
 
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold">몇 가지만 더 확인할게요</h1>
+        <h1 className="text-2xl font-bold text-[var(--heading)]">몇 가지만 더 확인할게요</h1>
         <p className="text-base leading-7 text-zinc-600 dark:text-zinc-400">
           공공 정보에는 나오지 않는 내용이에요. 잘 모르면 &quot;모르겠음&quot;을 골라 주세요. 모르는 것이 있으면 담당자 상담이
           필요한 노란불로 판정돼요.
@@ -61,7 +61,7 @@ export function QuestionStep({
 
       <form ref={formRef} onSubmit={submit} noValidate className="flex flex-col gap-5">
         {questions.map((q, i) => (
-          <fieldset key={q.key} className="flex flex-col gap-3 rounded-xl border border-zinc-300 p-4 dark:border-zinc-700">
+          <fieldset key={q.key} className="k-card flex flex-col gap-3">
             <legend className="px-2 text-lg font-semibold">
               {i + 1}. {q.text}
             </legend>
@@ -77,7 +77,7 @@ export function QuestionStep({
                     onChange={() => setAnswers((prev) => ({ ...prev, [q.key]: a }))}
                     className="peer sr-only"
                   />
-                  <span className="flex min-h-12 items-center justify-center rounded-xl border-2 border-zinc-300 px-2 text-base font-semibold hover:border-zinc-500 peer-checked:border-sky-600 peer-checked:bg-sky-600 peer-checked:text-white peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-sky-600 dark:border-zinc-700">
+                  <span className="flex min-h-12 items-center justify-center rounded-sm border-2 border-zinc-300 px-2 text-base font-semibold hover:border-zinc-500 peer-checked:border-sky-600 peer-checked:bg-sky-600 peer-checked:text-white peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-sky-600 dark:border-zinc-700">
                     {ANSWER_LABELS[a]}
                   </span>
                 </label>
@@ -96,14 +96,14 @@ export function QuestionStep({
           <button
             type="button"
             onClick={onBack}
-            className="min-h-12 rounded-xl border-2 border-zinc-300 px-6 text-base font-semibold hover:border-zinc-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-700 dark:hover:border-zinc-200"
+            className="min-h-12 rounded-sm border-2 border-[var(--navy)] px-6 text-base font-semibold text-[var(--heading)] hover:bg-[var(--panel)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-[var(--blue)]"
           >
             ← 확인·수정으로 돌아가기
           </button>
           <button
             type="submit"
             disabled={!complete}
-            className="min-h-12 rounded-xl bg-zinc-900 px-6 text-base font-semibold text-white hover:bg-zinc-700 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="min-h-12 rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:opacity-50 dark:bg-[var(--blue)] dark:text-white dark:hover:bg-[#8aa4ff]"
           >
             판정하기
           </button>

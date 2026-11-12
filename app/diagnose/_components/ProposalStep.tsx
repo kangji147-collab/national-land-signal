@@ -27,7 +27,7 @@ type State = { phase: "loading" } | { phase: "done"; data: ProposalData } | { ph
 // 서버가 AI 다듬기를 최대 12초 기다리므로 그보다 넉넉하게
 const TIMEOUT_MS = 30_000;
 
-const cardClass = "flex flex-col gap-2 rounded-2xl border-2 border-zinc-300 p-5 dark:border-zinc-700";
+const cardClass = "k-card flex flex-col gap-2";
 const noteClass = "text-sm leading-6 text-zinc-600 dark:text-zinc-400";
 
 /** 시뮬레이션 이미지: 만드는 중 / 완료(이미지 + 오늘 남은 횟수) / 실패(제외됨 + 다시 시도) */
@@ -162,13 +162,17 @@ export function ProposalStep({
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8 sm:py-10">
       <StepBar current={6} />
-      <h1 className="text-2xl font-bold">개발 제안서</h1>
-      <p className={noteClass}>
-        선택한 테마: <strong className="text-zinc-900 dark:text-zinc-100">{request.theme}</strong>
-      </p>
+      {/* 문서 머리: 짙은 남색 칸에 제목과 선택한 테마 */}
+      <header className="flex flex-col gap-1 bg-[var(--navy)] px-6 py-6 text-white dark:bg-[var(--blue)]">
+        <p className="text-sm font-medium opacity-80">국유재산 매각 가능 여부 자가진단</p>
+        <h1 className="text-3xl font-bold tracking-tight">개발 제안서</h1>
+        <p className="text-base">
+          선택한 테마: <strong className="font-bold">{request.theme}</strong>
+        </p>
+      </header>
 
       <section className={cardClass} data-testid="simulation">
-        <h2 className="text-lg font-semibold">시뮬레이션 이미지</h2>
+        <h2 className="k-h2">시뮬레이션 이미지</h2>
         {image.phase === "loading" && (
           <p role="status" className="text-base text-zinc-600 dark:text-zinc-400" data-testid="image-loading">
             개발 후 모습을 만들고 있어요. 1분 정도 걸릴 수 있어요… <ElapsedSeconds />
@@ -180,12 +184,12 @@ export function ProposalStep({
               <figure className="flex flex-col gap-1">
                 {/* 브라우저 안의 임시 주소(blob:)·데이터 주소라서 next/image 를 쓰지 않는다 */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={photo.previewUrl} alt="올린 현장 사진" className="w-full rounded-xl border border-zinc-300 object-contain dark:border-zinc-700" />
+                <img src={photo.previewUrl} alt="올린 현장 사진" className="w-full rounded-sm border border-zinc-300 object-contain dark:border-zinc-700" />
                 <figcaption className={noteClass}>현재 사진</figcaption>
               </figure>
               <figure className="flex flex-col gap-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={image.src} alt={`${request.theme}로 개발한 뒤의 모습 (AI가 만든 예시 이미지)`} className="w-full rounded-xl border border-zinc-300 object-contain dark:border-zinc-700" data-testid="image-after" />
+                <img src={image.src} alt={`${request.theme}로 개발한 뒤의 모습 (AI가 만든 예시 이미지)`} className="w-full rounded-sm border border-zinc-300 object-contain dark:border-zinc-700" data-testid="image-after" />
                 <figcaption className={noteClass}>개발 후 (AI가 만든 예시 이미지)</figcaption>
               </figure>
             </div>
@@ -226,7 +230,7 @@ export function ProposalStep({
       {state.phase === "done" && <Results data={state.data} />}
 
       <section className={cardClass} data-testid="purchase-guide">
-        <h2 className="text-lg font-semibold">{MESSAGES.purchaseGuideHeading}</h2>
+        <h2 className="k-h2">{MESSAGES.purchaseGuideHeading}</h2>
         {MESSAGES.purchaseGuide.map((l) => (
           <p key={l} className={noteClass}>
             {l}
@@ -239,7 +243,7 @@ export function ProposalStep({
           type="button"
           onClick={downloadPdf}
           disabled={!canDownload || pdfBusy}
-          className="min-h-12 self-start rounded-xl bg-emerald-700 px-6 text-base font-semibold text-white hover:bg-emerald-800 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:bg-zinc-300 disabled:text-zinc-600 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-400"
+          className="min-h-12 self-start rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] dark:bg-[var(--blue)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 disabled:bg-zinc-300 disabled:text-zinc-600 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-400"
           data-testid="pdf-download"
         >
           {pdfBusy ? "PDF를 만들고 있어요…" : "PDF로 내려받기"}
@@ -265,7 +269,7 @@ export function ProposalStep({
         <button
           type="button"
           onClick={onBack}
-          className="min-h-12 rounded-xl border-2 border-zinc-300 px-6 text-base font-semibold hover:border-zinc-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-700 dark:hover:border-zinc-200"
+          className="min-h-12 rounded-sm border-2 border-[var(--navy)] px-6 text-base font-semibold text-[var(--heading)] hover:bg-[var(--panel)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-[var(--blue)]"
         >
           ← 사진·테마 다시 고르기
         </button>
@@ -281,23 +285,23 @@ function Results({ data }: { data: ProposalData }) {
     <>
       {oldBuilding?.status === "old" && (
         <p
-          className="rounded-xl border-2 border-amber-500 bg-amber-50 px-4 py-3 text-base font-semibold text-amber-950 dark:bg-amber-950/40 dark:text-amber-100"
+          className="rounded-sm border-2 border-amber-500 bg-amber-50 px-4 py-3 text-base font-semibold text-amber-950 dark:bg-amber-950/40 dark:text-amber-100"
           data-testid="old-building"
         >
           ⚠️ {MESSAGES.oldBuilding} (사용승인 후 {oldBuilding.years}년)
         </p>
       )}
       {oldBuilding?.status === "unknown" && (
-        <p className="rounded-xl border-2 border-zinc-300 px-4 py-3 text-base dark:border-zinc-700" data-testid="old-unknown">
+        <p className="rounded-sm border-2 border-zinc-300 px-4 py-3 text-base dark:border-zinc-700" data-testid="old-unknown">
           사용승인일 확인 필요 — 30년 이상 된 건물이면 안전진단이 필요해요.
         </p>
       )}
 
       <section className={cardClass} data-testid="income">
-        <h2 className="text-lg font-semibold">예상 수익 (연)</h2>
+        <h2 className="k-h2">예상 수익 (연)</h2>
         {income.ok ? (
           <>
-            <p className="text-2xl font-bold" data-testid="income-range">
+            <p className="text-3xl font-bold text-[var(--heading)]" data-testid="income-range">
               {income.min === 0 && income.max === 0 ? "직접 수익 없음" : `${formatWon(income.min)} ~ ${formatWon(income.max)}`}
             </p>
             <p className={noteClass}>계산식: {income.formula}</p>
@@ -324,10 +328,10 @@ function Results({ data }: { data: ProposalData }) {
       </section>
 
       <section className={cardClass} data-testid="price">
-        <h2 className="text-lg font-semibold">예상 매수 가격</h2>
+        <h2 className="k-h2">예상 매수 가격</h2>
         {price.ok ? (
           <>
-            <p className="text-2xl font-bold" data-testid="price-amount">
+            <p className="text-3xl font-bold text-[var(--heading)]" data-testid="price-amount">
               약 {formatWon(price.amount)}
             </p>
             <p className={noteClass}>계산식: {price.formula}</p>
@@ -355,7 +359,7 @@ function Results({ data }: { data: ProposalData }) {
       </section>
 
       <section className={cardClass} data-testid="effects">
-        <h2 className="text-lg font-semibold">기대효과</h2>
+        <h2 className="k-h2">기대효과</h2>
         {data.effects.sentences.length > 0 ? (
           <ul className="list-disc space-y-2 pl-5 text-base leading-7">
             {data.effects.sentences.map((s) => (

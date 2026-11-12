@@ -75,7 +75,7 @@ export function ResultStep({
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8 sm:py-10">
       <StepBar current={4} />
-      <h1 className="text-2xl font-bold">판정 결과</h1>
+      <h1 className="text-2xl font-bold text-[var(--heading)]">판정 결과</h1>
 
       {state.phase === "loading" && (
         <p role="status" className="text-base text-zinc-600 dark:text-zinc-400">
@@ -92,7 +92,7 @@ export function ResultStep({
         return (
           <>
             {/* 큰 신호: 색 + 글자 + 아이콘 */}
-            <section role="status" aria-label="판정 결과" className={`flex flex-col gap-2 rounded-2xl border-2 p-5 ${TONE[signal]}`}>
+            <section role="status" aria-label="판정 결과" className={`flex flex-col gap-2 rounded-sm border-2 p-5 ${TONE[signal]}`}>
               <p className="flex items-center gap-3 text-3xl font-bold" data-testid="signal">
                 <span aria-hidden="true">{view.icon}</span>
                 <span>{view.title}</span>
@@ -101,12 +101,12 @@ export function ResultStep({
             </section>
 
             <section aria-label="판정 근거" className="flex flex-col gap-3">
-              <h2 className="text-lg font-semibold">{view.reasonsTitle}</h2>
+              <h2 className="k-h2">{view.reasonsTitle}</h2>
               <ul className="flex flex-col gap-2" data-testid="reasons">
                 {reasons.map((b, i) => {
                   const d = describeBasis(b);
                   return (
-                    <li key={`${b.kind}:${b.name}:${i}`} className="rounded-xl border border-zinc-300 px-4 py-3 dark:border-zinc-700">
+                    <li key={`${b.kind}:${b.name}:${i}`} className="border border-l-4 border-zinc-300 border-l-[var(--navy)] px-4 py-3 dark:border-zinc-700 dark:border-l-[var(--blue)]">
                       <p className="text-base font-semibold">{d.title}</p>
                       <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">{d.detail}</p>
                     </li>
@@ -116,15 +116,15 @@ export function ResultStep({
             </section>
 
             {editedLabels.length > 0 && (
-              <p className="rounded-xl bg-amber-50 px-4 py-3 text-base text-amber-950 dark:bg-amber-950/40 dark:text-amber-100" data-testid="edited-note">
+              <p className="rounded-sm bg-amber-50 px-4 py-3 text-base text-amber-950 dark:bg-amber-950/40 dark:text-amber-100" data-testid="edited-note">
                 ✏️ {MESSAGES.userEdited}: <strong className="font-semibold">{editedLabels.join(", ")}</strong>
                 <span className="block text-sm">이 결과는 민원인이 고친 값을 기준으로 한 거예요.</span>
               </p>
             )}
 
             {signal === "yellow" && (
-              <section aria-label="상담 연락처" className="flex flex-col gap-1 rounded-xl border-2 border-amber-500 p-4" data-testid="contact">
-                <h2 className="text-lg font-semibold">상담 연락처</h2>
+              <section aria-label="상담 연락처" className="flex flex-col gap-1 rounded-sm border-2 border-amber-500 p-4" data-testid="contact">
+                <h2 className="k-h2">상담 연락처</h2>
                 {contact ? (
                   <>
                     <p className="text-base">{contact.name}</p>
@@ -145,7 +145,7 @@ export function ResultStep({
               <button
                 type="button"
                 onClick={onNext}
-                className="min-h-12 self-start rounded-xl bg-emerald-700 px-6 text-base font-semibold text-white hover:bg-emerald-800 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                className="min-h-12 self-start rounded-sm bg-[var(--navy)] px-6 text-base font-semibold text-white hover:bg-[var(--blue)] dark:bg-[var(--blue)] dark:hover:bg-[#8aa4ff] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
               >
                 사진으로 개발 모습 보기
               </button>
@@ -169,13 +169,13 @@ export function ResultStep({
         <button
           type="button"
           onClick={onBack}
-          className="min-h-12 rounded-xl border-2 border-zinc-300 px-6 text-base font-semibold hover:border-zinc-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-700 dark:hover:border-zinc-200"
+          className="min-h-12 rounded-sm border-2 border-[var(--navy)] px-6 text-base font-semibold text-[var(--heading)] hover:bg-[var(--panel)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-[var(--blue)]"
         >
           ← 질문으로 돌아가기
         </button>
         <Link
           href="/"
-          className="flex min-h-12 items-center justify-center rounded-xl border-2 border-zinc-300 px-6 text-base font-semibold hover:border-zinc-900 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-zinc-700 dark:hover:border-zinc-200"
+          className="flex min-h-12 items-center justify-center rounded-sm border-2 border-[var(--navy)] px-6 text-base font-semibold text-[var(--heading)] hover:bg-[var(--panel)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-[var(--blue)]"
         >
           처음부터 다시 하기
         </Link>

@@ -4,11 +4,14 @@
 import { z } from "zod";
 import { fail, ok, serverError } from "@/lib/api-response";
 import { fetchAllowedThemes } from "@/lib/rules-source";
+import { rejectCrossSite } from "@/lib/same-origin";
 import { createAnonClient } from "@/lib/supabase";
 
 const Query = z.object({ type: z.enum(["land", "building"]), zone: z.string().max(50) });
 
 export async function GET(request: Request) {
+  const blocked = rejectCrossSite(request); // 다른 사이트에서 몰래 부르는 요청 거절 (SEC-002)
+  if (blocked) return blocked;
   // request.url 을 읽으므로 요청 때마다 실행된다 (캐시되지 않음)
   const sp = new URL(request.url).searchParams;
   const parsed = Query.safeParse({ type: sp.get("type") ?? "", zone: sp.get("zone") ?? "" });
