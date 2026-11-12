@@ -12,12 +12,15 @@ import { z } from "zod";
 import { fail, ok, serverError } from "@/lib/api-response";
 import { MESSAGES } from "@/lib/messages";
 import { UpstreamError, searchAddress } from "@/lib/public-api";
+import { rejectCrossSite } from "@/lib/same-origin";
 import { createSupabaseUsageStore, getClientIp, runWithUsage } from "@/lib/usage-limit";
 
 // 주소는 2~100자 (DESIGN §8)
 const Query = z.object({ q: z.string().trim().min(2).max(100) });
 
 export async function GET(request: Request) {
+  const blocked = rejectCrossSite(request);
+  if (blocked) return blocked;
   // request.url 을 읽으므로 요청 때마다 실행된다 (캐시되지 않음)
   const parsed = Query.safeParse({ q: new URL(request.url).searchParams.get("q") ?? "" });
   if (!parsed.success) {

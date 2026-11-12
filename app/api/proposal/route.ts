@@ -17,8 +17,15 @@ import { ProposalRequestSchema } from "@/lib/proposal-schema";
 import { toCalcEdited } from "@/lib/review";
 import { fetchAllowedThemes, fetchEffectSentences, fetchPrices, fetchRules } from "@/lib/rules-source";
 import { createAnonClient } from "@/lib/supabase";
+import { withPolishCache } from "@/lib/polish-cache";
+import { rejectCrossSite } from "@/lib/same-origin";
+
+// 서버가 켜져 있는 동안 기억한다 (요청마다 새로 만들지 않는다)
+const cachedPolish = withPolishCache((m) => polishText(m));
 
 export async function POST(request: Request) {
+  const blocked = rejectCrossSite(request);
+  if (blocked) return blocked;
   const json = await request.json().catch(() => null);
   const parsed = ProposalRequestSchema.safeParse(json);
   if (!parsed.success) return fail("VALIDATION_ERROR", "입력한 내용을 다시 확인해 주세요");
@@ -62,7 +69,7 @@ export async function POST(request: Request) {
       type: req.type,
       base,
       aiAllowed: await hasSimulationLeft(request),
-      polish: (m) => polishText(m),
+      polish: cachedPolish, // 같은 글이면 OpenAI 를 다시 부르지 않는다 (비용 남용 방지)
     });
 
     return ok({

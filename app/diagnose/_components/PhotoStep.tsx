@@ -263,7 +263,7 @@ export function PhotoStep({
         {remaining !== null && (
           <p className="text-sm text-zinc-600 dark:text-zinc-400" data-testid="sim-remaining">
             {remaining > 0
-              ? `오늘 시뮬레이션 남은 횟수: ${remaining}회. 이미지를 만들면 1회 사용돼요. (실패하면 차감되지 않아요)`
+              ? `오늘 시뮬레이션 남은 횟수: ${remaining}회. 이미지를 만들면 1회 사용돼요. (만들기에 실패하면 차감되지 않아요. 기다리다 중간에 멈추면 사용될 수 있어요)`
               : MESSAGES.simulateLimit + " 이미지 없이 예상 수익·매수 가격·기대효과만 담은 제안서는 받을 수 있어요."}
           </p>
         )}

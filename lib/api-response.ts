@@ -9,6 +9,7 @@ export const ERROR_STATUS = {
   ADDRESS_NOT_FOUND: 404, // 주소 없음
   LAND_INFO_NOT_FOUND: 404, // 소재지·면적을 못 가져옴
   NO_BUILDING_REGISTER: 404, // 건축물대장 없음
+  FORBIDDEN_ORIGIN: 403, // 다른 사이트에서 온 브라우저 요청
   NOT_GREEN: 403, // 🟢 아님
   THEME_NOT_ALLOWED: 403, // 허용되지 않은 테마
   LIMIT_EXCEEDED: 429, // 횟수 소진

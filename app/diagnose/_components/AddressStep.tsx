@@ -304,7 +304,7 @@ export function AddressStep({
             {lookupPhase === "loading" ? "공공 정보를 가져오고 있어요…" : "정보 가져오기"}
           </button>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            누르면 오늘 주소 조회 횟수가 1회 사용돼요. (공공 API 오류로 실패하면 차감되지 않아요)
+            누르면 오늘 주소 조회 횟수가 1회 사용돼요. (공공 API 오류로 실패하면 차감되지 않아요. 기다리다 중간에 멈추면 사용될 수 있어요)
           </p>
         </section>
       )}

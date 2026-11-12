@@ -12,6 +12,7 @@ import { z } from "zod";
 import { fail, ok, serverError } from "@/lib/api-response";
 import { MESSAGES } from "@/lib/messages";
 import { type BuildingLookup, type LandInfo, UpstreamError, lookupBuildings, lookupLand } from "@/lib/public-api";
+import { rejectCrossSite } from "@/lib/same-origin";
 import { createSupabaseUsageStore, getClientIp, runWithUsage } from "@/lib/usage-limit";
 
 // 필지 번호는 숫자 19자리 (DESIGN §8). 건물 진단(building)이면 건축물대장도 함께 가져온다.
@@ -26,6 +27,8 @@ type Outcome =
   | { kind: "ok"; land: LandInfo; buildings: BuildingLookup | null };
 
 export async function POST(request: Request) {
+  const blocked = rejectCrossSite(request);
+  if (blocked) return blocked;
   const json = await request.json().catch(() => null);
   const parsed = Body.safeParse(json);
   if (!parsed.success) return fail("VALIDATION_ERROR", "필지를 다시 선택해 주세요");

@@ -9,6 +9,7 @@ import { judge } from "@/lib/judge";
 import { toJudgeInput } from "@/lib/judge-schema";
 import { simulateImage } from "@/lib/openai";
 import { SimulateMetaSchema } from "@/lib/proposal-schema";
+import { rejectCrossSite } from "@/lib/same-origin";
 import { fetchAllowedThemes, fetchRules } from "@/lib/rules-source";
 import { buildSimulatePrompt } from "@/lib/simulate-prompt";
 import { createAnonClient } from "@/lib/supabase";
@@ -23,6 +24,8 @@ const MAX_PHOTO_BYTES = 4 * 1024 * 1024;
 const AI_FAILED_MESSAGE = "시뮬레이션 이미지를 만들지 못했어요. 잠시 후 다시 시도해 주세요";
 
 export async function POST(request: Request) {
+  const blocked = rejectCrossSite(request); // 다른 사이트가 방문자 브라우저로 몰래 부르는 것을 막는다
+  if (blocked) return blocked;
   const form = await request.formData().catch(() => null);
   if (!form) return fail("VALIDATION_ERROR", "입력한 내용을 다시 확인해 주세요");
 

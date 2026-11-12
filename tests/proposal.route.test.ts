@@ -12,6 +12,8 @@ vi.mock("@/lib/rules-source", async (importOriginal) => ({
   fetchEffectSentences: vi.fn(),
 }));
 vi.mock("@/lib/openai", () => ({ polishText: vi.fn() }));
+// 이 시험은 요청마다 AI 호출 결과를 확인하므로 기억 장치는 끈다 (기억 동작은 polish-cache.test.ts 에서 시험)
+vi.mock("@/lib/polish-cache", () => ({ withPolishCache: (fn: unknown) => fn }));
 vi.mock("@/lib/usage-limit", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../lib/usage-limit")>()),
   createSupabaseUsageStore: vi.fn(() => ({})),

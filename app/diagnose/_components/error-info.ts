@@ -22,11 +22,14 @@ const HINTS: Record<string, string> = {
 };
 
 const RETRY_HINT = "실패한 조회는 오늘 횟수에서 차감되지 않아요.";
+// 브라우저가 기다리다 멈춘 경우: 서버는 이미 처리를 끝냈을 수 있어서 횟수가 사용됐을 수 있다 (정직하게 안내)
+const WAIT_STOPPED_HINT = "응답을 기다리다 멈춘 경우에는 서버가 이미 처리해 횟수가 사용됐을 수 있어요.";
 
 export function describeError(code: string): ErrorInfo {
   const retryable = RETRYABLE.has(code);
+  const retryHint = code === "NETWORK" || code === "TIMEOUT" ? WAIT_STOPPED_HINT : RETRY_HINT;
   return {
-    hint: HINTS[code] ?? (retryable ? RETRY_HINT : null),
+    hint: HINTS[code] ?? (retryable ? retryHint : null),
     retryable,
     exhausted: code === "LIMIT_EXCEEDED",
   };

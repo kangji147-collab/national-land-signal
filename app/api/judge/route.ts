@@ -7,9 +7,12 @@ import { fail, ok, serverError } from "@/lib/api-response";
 import { judge } from "@/lib/judge";
 import { JudgeRequestSchema, toJudgeInput } from "@/lib/judge-schema";
 import { fetchContact, fetchRules } from "@/lib/rules-source";
+import { rejectCrossSite } from "@/lib/same-origin";
 import { createAnonClient } from "@/lib/supabase";
 
 export async function POST(request: Request) {
+  const blocked = rejectCrossSite(request);
+  if (blocked) return blocked;
   const json = await request.json().catch(() => null);
   const parsed = JudgeRequestSchema.safeParse(json);
   if (!parsed.success) return fail("VALIDATION_ERROR", "입력한 내용을 다시 확인해 주세요");

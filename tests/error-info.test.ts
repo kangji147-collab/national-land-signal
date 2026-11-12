@@ -26,12 +26,22 @@ describe("못 찾았을 때 — 진행을 멈추고 안내 (다시 시도 버튼
   });
 });
 
-describe("잠시 뒤 다시 하면 될 수 있는 오류 — '다시 시도' 버튼 + 횟수 차감 없음 안내", () => {
-  it.each(["UPSTREAM_FAILED", "SERVER_ERROR", "AI_FAILED", "NETWORK", "TIMEOUT"])("%s", (code) => {
+describe("서버가 실패를 알려 준 오류 — '다시 시도' 버튼 + 횟수 차감 없음 안내", () => {
+  it.each(["UPSTREAM_FAILED", "SERVER_ERROR", "AI_FAILED"])("%s", (code) => {
     const i = describeError(code);
     expect(i.retryable).toBe(true);
     expect(i.exhausted).toBe(false);
     expect(i.hint).toContain("차감되지 않아요");
+  });
+});
+
+describe("브라우저가 기다리다 멈춘 오류 — 서버가 이미 처리했을 수 있어 횟수가 사용됐을 수 있다고 안내", () => {
+  it.each(["NETWORK", "TIMEOUT"])("%s", (code) => {
+    const i = describeError(code);
+    expect(i.retryable).toBe(true);
+    expect(i.exhausted).toBe(false);
+    expect(i.hint).toContain("사용됐을 수 있어요");
+    expect(i.hint).not.toContain("차감되지 않아요");
   });
 });
 
