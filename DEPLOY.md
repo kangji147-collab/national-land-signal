@@ -1,6 +1,6 @@
 # 배포 준비 점검 (PLAN 작업 23번)
 
-점검일: 2026-11-12 · 결과: **빌드·검사 통과. 실제 배포는 하지 않았어요.** (배포는 Vercel 계정 작업이라 사용자 확인 후 진행)
+점검일: 2026-11-12 · 결과: **빌드·검사 통과. Vercel 운영 배포 완료** (https://national-land-signal.vercel.app, GitHub: https://github.com/kangji147-collab/national-land-signal). 배포 서버는 서울(`vercel.json`의 `icn1`)에서 실행한다.
 
 ## 점검 결과
 
@@ -32,7 +32,7 @@ CLI 작업용(`SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASS
 
 ## 배포 전에 사람이 해야 하는 일
 
-1. **브이월드에 배포 주소 등록** — 개발용(`localhost:3000`)만 등록돼 있다면 Vercel 주소를 추가하고 `VWORLD_DOMAIN`을 그 주소로 설정. 안 하면 배포본에서 주소 검색·토지 조회가 거절될 수 있다.
+1. ✅ **브이월드에 배포 주소 등록 — 완료 (2026-11-12).** `national-land-signal.vercel.app`을 등록했고 `VWORLD_DOMAIN`도 이 주소로 설정돼 있다. 배포본에서 주소 검색·토지 조회·건물 조회(건축HUB)·판정이 정상인 것을 확인했다. (등록 전에는 토지 정보 API가 `INCORRECT_KEY`로 거절됐다. 배포 주소가 바뀌면 다시 등록해야 한다.)
 2. **접속 주소 헤더 확인** — `lib/usage-limit.ts`의 `getClientIp`는 `x-vercel-forwarded-for` → `x-real-ip` → `x-forwarded-for` 순으로 읽는다. Vercel 문서로 이 순서가 맞는지(그리고 사용자가 보낸 값이 덮어써지는지) 확인하고, 배포 후 두 기기에서 횟수가 따로 세어지는지 시험한다. 헤더를 못 읽으면 모두 `unknown` 한 칸으로 합쳐져 하루 한도를 함께 쓰게 된다.
 3. **함수 실행 시간 한도 확인** — `/api/simulate`는 `maxDuration = 120`(초)이다. 이미지는 보통 약 30초지만, 사용 중인 Vercel 요금제에서 120초가 허용되는지 확인한다. 허용되지 않으면 값을 낮추고 `lib/openai.ts`의 `IMAGE_TIMEOUT_MS`(100초)도 같이 줄인다.
 4. **임시 값 교체** — 상담 연락처(1588-3570으로 교체 완료, 운영 시간은 미확인), 단가표·기대효과 문장의 `[예시]` 값, 매수 신청 안내 문구(`lib/messages.ts`, 임시 작성).
