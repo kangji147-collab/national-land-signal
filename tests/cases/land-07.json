@@ -1,0 +1,30 @@
+{
+  "id": "land-07",
+  "type": "land",
+  "pnu": "4148025021100010001",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "경기도 파주시 문산읍 문산리 1-1",
+    "landCategory": "대",
+    "area": 108,
+    "officialPrice": null,
+    "zone": "제2종일반주거지역",
+    "otherZones": [
+      "상대보호구역",
+      "토지거래계약에관한허가구역",
+      "도시지역",
+      "정비구역",
+      "가축사육제한구역",
+      "하수처리구역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no"
+  },
+  "expectedSignal": "yellow",
+  "expectedReason": "지목 대 108㎡, 정비구역 안. 정비구역 안 국공유지는 정비사업 시행과 관련해 처분 방법·상대가 제한될 수 있어(도시 및 주거환경정비법) 담당자 확인이 필요하다",
+  "sourceDoc": "tests/source-docs/land-07.pdf"
+}

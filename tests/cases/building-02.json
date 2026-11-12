@@ -1,0 +1,43 @@
+{
+  "id": "building-02",
+  "type": "building",
+  "pnu": "1168010500101590000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전] 건물 9동 (주소 조회 시 첫 번째 동 사용)",
+  "extracted": {
+    "address": "서울특별시 강남구 삼성동 159",
+    "landCategory": "대",
+    "area": 87534.3,
+    "officialPrice": null,
+    "zone": "일반상업지역",
+    "otherZones": [
+      "대공방어협조구역",
+      "상대보호구역",
+      "폐기물매립시설설치제한지역",
+      "도시지역",
+      "과밀억제권역",
+      "토지거래계약에관한허가구역",
+      "건축선",
+      "철도",
+      "지구단위계획구역",
+      "자동차정류장"
+    ]
+  },
+  "building": {
+    "address": "서울특별시 강남구 삼성동 159",
+    "mainUse": "",
+    "totalFloorArea": null,
+    "floors": "",
+    "structure": "",
+    "approvalDate": ""
+  },
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no",
+    "safety": "no"
+  },
+  "expectedSignal": "green",
+  "expectedReason": "삼성동 업무·숙박·판매시설이 있는 일반상업지역 대지. 행정재산으로 쓰이는 사정이 없는 일반재산으로 가정한다. 국유재산법 제41조①: 일반재산은 처분할 수 있다 (제43조 경쟁입찰이 원칙)",
+  "sourceDoc": "tests/source-docs/building-02.pdf",
+  "sourceDocBuilding": "tests/source-docs/building-02-register.pdf"
+}

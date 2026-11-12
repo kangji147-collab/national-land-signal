@@ -1,0 +1,42 @@
+{
+  "id": "building-03",
+  "type": "building",
+  "pnu": "4129010700100010000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전] 건물 6동 (주소 조회 시 첫 번째 동 사용)",
+  "extracted": {
+    "address": "경기도 과천시 중앙동 1",
+    "landCategory": "대",
+    "area": 130801.7,
+    "officialPrice": null,
+    "zone": "제2종일반주거지역",
+    "otherZones": [
+      "과밀억제권역",
+      "개발제한구역",
+      "자연녹지지역",
+      "토지거래계약에관한허가구역",
+      "공공청사",
+      "대로3류",
+      "도시지역",
+      "가축사육제한구역",
+      "역사문화환경보존지역"
+    ]
+  },
+  "building": {
+    "address": "경기도 과천시 중앙동 1",
+    "mainUse": "",
+    "totalFloorArea": null,
+    "floors": "",
+    "structure": "",
+    "approvalDate": ""
+  },
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no",
+    "safety": "no"
+  },
+  "expectedSignal": "red",
+  "expectedReason": "과천 정부청사(공공청사, 업무시설 다수). 정부청사는 공용재산이다. 국유재산법 제6조②1·제27조: 행정재산은 처분하지 못한다",
+  "sourceDoc": "tests/source-docs/building-03.pdf",
+  "sourceDocBuilding": "tests/source-docs/building-03-register.pdf"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "land-01",
+  "type": "land",
+  "note": "사례를 한 줄로 설명 (예: 주거지역 + 교육환경보호구역)",
+  "extracted": {
+    "address": "서울특별시 ○○구 ○○동 000-0",
+    "landCategory": "대",
+    "area": 0,
+    "officialPrice": 0,
+    "zone": "제2종일반주거지역",
+    "otherZones": ["상대보호구역(키즈포레유치원)<교육환경 보호에 관한 법률>"]
+  },
+  "building": null,
+  "buildingExample": {
+    "note": "건물 사례일 때만: 위 building 칸에 이 모양으로 채우고, type을 building으로 바꾼다. 소유자는 적지 않는다.",
+    "address": "서울특별시 ○○구 ○○동 000-0",
+    "mainUse": "업무시설",
+    "totalFloorArea": 0,
+    "floors": "지상 3층",
+    "structure": "철근콘크리트구조",
+    "approvalDate": "1990-01-01"
+  },
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no",
+    "safety": "no (건물 사례만 넣는다. 값: yes / no / unknown)"
+  },
+  "expectedSignal": "green",
+  "expectedReason": "정답을 이렇게 정한 이유 (처분기준 근거 한 줄)",
+  "sourceDoc": "tests/source-docs/land-01.pdf"
+}

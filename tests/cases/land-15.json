@@ -1,0 +1,29 @@
+{
+  "id": "land-15",
+  "type": "land",
+  "pnu": "4165037023100010000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "경기도 포천시 일동면 기산리 1",
+    "landCategory": "유지",
+    "area": 1154,
+    "officialPrice": null,
+    "zone": "보전관리지역",
+    "otherZones": [
+      "배출시설설치제한지역",
+      "성장관리권역",
+      "성장관리계획구역",
+      "가축사육제한구역",
+      "토지거래계약에관한허가구역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no"
+  },
+  "expectedSignal": "red",
+  "expectedReason": "지목 유지(저수지·연못) 1,154㎡. 유지는 국가가 직접 공공용으로 쓰는 재산(공공용재산)으로 본다. 국유재산법 제6조②2·제27조: 국가가 직접 공공용으로 쓰는 공공용재산(행정재산)은 처분할 수 없다",
+  "sourceDoc": "tests/source-docs/land-15.pdf"
+}

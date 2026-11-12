@@ -1,0 +1,27 @@
+{
+  "id": "land-10",
+  "type": "land",
+  "pnu": "5180025021100010000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "강원특별자치도 양구군 양구읍 상리 1",
+    "landCategory": "전",
+    "area": 1983,
+    "officialPrice": null,
+    "zone": "자연환경보전지역",
+    "otherZones": [
+      "공장설립제한지역",
+      "영농여건불리농지",
+      "가축사육제한구역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no"
+  },
+  "expectedSignal": "yellow",
+  "expectedReason": "지목 전 1,983㎡, 자연환경보전지역·영농여건불리농지. 보전 목적 지역이고 농지는 취득자격(농지법)과 실경작자 우선(국유재산법 시행령 제40조②2) 확인이 필요하다",
+  "sourceDoc": "tests/source-docs/land-10.pdf"
+}

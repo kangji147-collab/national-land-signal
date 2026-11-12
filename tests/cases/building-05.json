@@ -1,0 +1,40 @@
+{
+  "id": "building-05",
+  "type": "building",
+  "pnu": "5211111000100010000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전] 건물 1동 (주소 조회 시 첫 번째 동 사용)",
+  "extracted": {
+    "address": "전북특별자치도 전주시 완산구 풍남동3가 1",
+    "landCategory": "대",
+    "area": 4726.7,
+    "officialPrice": null,
+    "zone": "제2종일반주거지역",
+    "otherZones": [
+      "준보전산지",
+      "제1종일반주거지역",
+      "가축사육제한구역",
+      "고도지구",
+      "정비구역",
+      "제1종지구단위계획구역",
+      "역사문화환경보존지역"
+    ]
+  },
+  "building": {
+    "address": "전북특별자치도 전주시 완산구 풍남동3가 1",
+    "mainUse": "",
+    "totalFloorArea": null,
+    "floors": "",
+    "structure": "",
+    "approvalDate": ""
+  },
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no",
+    "safety": "no"
+  },
+  "expectedSignal": "green",
+  "expectedReason": "제1종근린생활시설 1동(2007년 사용승인), 제2종일반주거지역. 고도지구·준보전산지 등은 이용 제한이다. 국유재산법 제41조①: 일반재산은 처분할 수 있다 (제43조 경쟁입찰이 원칙)",
+  "sourceDoc": "tests/source-docs/building-05.pdf",
+  "sourceDocBuilding": "tests/source-docs/building-05-register.pdf"
+}

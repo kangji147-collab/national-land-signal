@@ -1,0 +1,30 @@
+{
+  "id": "land-08",
+  "type": "land",
+  "pnu": "2871025022100010000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "인천광역시 강화군 강화읍 관청리 1",
+    "landCategory": "잡종지",
+    "area": 1041,
+    "officialPrice": null,
+    "zone": "자연녹지지역",
+    "otherZones": [
+      "성장관리권역",
+      "국가지정문화유산구역",
+      "역사문화환경보존지역",
+      "가축사육제한구역",
+      "도시자연공원구역",
+      "도시지역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "unknown"
+  },
+  "expectedSignal": "yellow",
+  "expectedReason": "지목 잡종지이나 국가지정문화유산구역·도시자연공원구역에 걸쳐 있고, 사용 여부를 '모르겠음'으로 답했다. 문화유산 보존 협의와 사용 현황 확인이 필요하다",
+  "sourceDoc": "tests/source-docs/land-08.pdf"
+}

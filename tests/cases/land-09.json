@@ -1,0 +1,30 @@
+{
+  "id": "land-09",
+  "type": "land",
+  "pnu": "5115011300100010001",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "강원특별자치도 강릉시 강문동 1-1",
+    "landCategory": "대",
+    "area": 6426,
+    "officialPrice": null,
+    "zone": "계획관리지역",
+    "otherZones": [
+      "동계올림픽특별구역",
+      "역사문화환경보존지역",
+      "지구단위계획구역",
+      "자연재해위험개선지구",
+      "가축사육제한구역",
+      "토지거래계약에관한허가구역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no"
+  },
+  "expectedSignal": "green",
+  "expectedReason": "지목 대 6,426㎡, 계획관리지역. 동계올림픽특별구역·자연재해위험개선지구는 이용 제한이다. 국유재산법 제41조①: 일반재산은 처분할 수 있다 (제43조 경쟁입찰이 원칙)",
+  "sourceDoc": "tests/source-docs/land-09.pdf"
+}

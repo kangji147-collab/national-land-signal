@@ -1,0 +1,27 @@
+{
+  "id": "land-12",
+  "type": "land",
+  "pnu": "3611011000105650000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "세종특별자치시  어진동 565",
+    "landCategory": "공원",
+    "area": 2596.2,
+    "officialPrice": null,
+    "zone": "중심상업지역",
+    "otherZones": [
+      "미관지구",
+      "지구단위계획구역",
+      "가축사육제한구역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no"
+  },
+  "expectedSignal": "red",
+  "expectedReason": "지목 공원 2,596㎡. 공원은 공공용재산이다. 국유재산법 제6조②2·제27조: 국가가 직접 공공용으로 쓰는 공공용재산(행정재산)은 처분할 수 없다",
+  "sourceDoc": "tests/source-docs/land-12.pdf"
+}

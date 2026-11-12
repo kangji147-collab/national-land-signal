@@ -36,6 +36,16 @@ yarn-error.log*
 # vercel
 .vercel
 
+# 삭제 대기 파일 (사용자가 직접 확인 후 삭제)
+/trash-can/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 시험용 원본 서류·사진 (개인 보관, 커밋 금지)
+/tests/source-docs/
+/tests/photos/
+
+# 값 없는 이름 목록 파일은 커밋 허용
+!.env.example

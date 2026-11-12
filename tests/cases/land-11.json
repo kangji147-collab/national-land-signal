@@ -1,0 +1,30 @@
+{
+  "id": "land-11",
+  "type": "land",
+  "pnu": "4415010700100010001",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "충청남도 공주시 웅진동 1-1",
+    "landCategory": "전",
+    "area": 161,
+    "officialPrice": null,
+    "zone": "자연녹지지역",
+    "otherZones": [
+      "하천구역",
+      "역사문화환경보존육성지구",
+      "역사문화환경보존지역",
+      "하천",
+      "도시지역",
+      "가축사육제한구역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "yes",
+    "inUse": "no"
+  },
+  "expectedSignal": "yellow",
+  "expectedReason": "지목 전 161㎡, 하천구역 포함. 소송·분쟁 중이라고 답했다. 분쟁 중이면 수의계약이 곤란하고 경쟁입찰로 처분해야 하며(시행령 제40조⑥) 처분 가능 여부는 담당자 상담이 필요하다",
+  "sourceDoc": "tests/source-docs/land-11.pdf"
+}

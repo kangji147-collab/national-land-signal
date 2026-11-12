@@ -1,0 +1,30 @@
+{
+  "id": "land-06",
+  "type": "land",
+  "pnu": "4182025021100010000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "경기도 가평군 가평읍 읍내리 1",
+    "landCategory": "대",
+    "area": 76,
+    "officialPrice": null,
+    "zone": "보전관리지역",
+    "otherZones": [
+      "수변구역",
+      "하천구역",
+      "자연보전권역",
+      "폐기물매립시설설치제한지역",
+      "국가하천",
+      "가축사육제한구역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no"
+  },
+  "expectedSignal": "yellow",
+  "expectedReason": "지목 대 76㎡이나 하천구역(국가하천)·수변구역에 걸쳐 있어 하천관리청 협의가 필요하다. 하천법 제4조②: 하천 구성 토지는 소유권 이전은 가능하나 사권 행사가 제한된다",
+  "sourceDoc": "tests/source-docs/land-06.pdf"
+}

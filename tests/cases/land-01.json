@@ -1,0 +1,30 @@
+{
+  "id": "land-01",
+  "type": "land",
+  "pnu": "1120012200100090025",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전]",
+  "extracted": {
+    "address": "서울특별시 성동구 용답동 9-25",
+    "landCategory": "대",
+    "area": 166.3,
+    "officialPrice": null,
+    "zone": "제2종일반주거지역",
+    "otherZones": [
+      "대공방어협조구역",
+      "교육환경보호구역",
+      "도시지역",
+      "토지거래계약에관한허가구역",
+      "과밀억제권역",
+      "건축허가·착공제한지역"
+    ]
+  },
+  "building": null,
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no"
+  },
+  "expectedSignal": "green",
+  "expectedReason": "대(건축용 대지) 166㎡, 제2종일반주거지역. 일반재산으로 보이며 지역지구(대공방어협조구역·교육환경보호구역 등)는 이용 제한일 뿐 매각을 막지 않는다. 국유재산법 제41조①: 일반재산은 처분할 수 있다 (제43조 경쟁입찰이 원칙)",
+  "sourceDoc": "tests/source-docs/land-01.pdf"
+}

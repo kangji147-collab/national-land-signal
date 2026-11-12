@@ -1,0 +1,48 @@
+{
+  "id": "building-01",
+  "type": "building",
+  "pnu": "1114010300100310000",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전] 건물 2동 (주소 조회 시 첫 번째 동 사용)",
+  "extracted": {
+    "address": "서울특별시 중구 태평로1가 31",
+    "landCategory": "대",
+    "area": 12709.4,
+    "officialPrice": null,
+    "zone": "일반상업지역",
+    "otherZones": [
+      "대공방어협조구역",
+      "등록문화유산구역",
+      "과밀억제권역",
+      "역사문화환경보존지역",
+      "토지거래계약에관한허가구역",
+      "도로",
+      "지하도로",
+      "철도",
+      "가축사육제한구역",
+      "건축선",
+      "제1종지구단위계획구역",
+      "공공청사",
+      "가로구역별최고높이제한지역",
+      "중점경관관리구역",
+      "서울도심"
+    ]
+  },
+  "building": {
+    "address": "서울특별시 중구 태평로1가 31",
+    "mainUse": "",
+    "totalFloorArea": null,
+    "floors": "",
+    "structure": "",
+    "approvalDate": ""
+  },
+  "answers": {
+    "onbid": "yes",
+    "dispute": "no",
+    "inUse": "no",
+    "safety": "no"
+  },
+  "expectedSignal": "red",
+  "expectedReason": "서울시청 부지와 청사(업무시설, 구 청사는 등록문화유산 1926년). 청사는 공용재산·보존용재산이다. 국유재산법 제27조: 행정재산은 처분하지 못한다",
+  "sourceDoc": "tests/source-docs/building-01.pdf",
+  "sourceDocBuilding": "tests/source-docs/building-01-register.pdf"
+}
