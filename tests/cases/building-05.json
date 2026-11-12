@@ -2,7 +2,7 @@
   "id": "building-05",
   "type": "building",
   "pnu": "5211111000100010000",
-  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전] 건물 1동 (주소 조회 시 첫 번째 동 사용)",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전] 건물 1동 (주소 조회 시 첫 번째 동 사용) [정답 변경 2026-11-12: AI 초안 🟢 → 🟡, 사용자 결정]",
   "extracted": {
     "address": "전북특별자치도 전주시 완산구 풍남동3가 1",
     "landCategory": "대",
@@ -33,8 +33,8 @@
     "inUse": "no",
     "safety": "no"
   },
-  "expectedSignal": "green",
-  "expectedReason": "제1종근린생활시설 1동(2007년 사용승인), 제2종일반주거지역. 고도지구·준보전산지 등은 이용 제한이다. 국유재산법 제41조①: 일반재산은 처분할 수 있다 (제43조 경쟁입찰이 원칙)",
+  "expectedSignal": "yellow",
+  "expectedReason": "정비구역 안의 땅이라 정비사업 진행에 따라 처분이 제한될 수 있어 담당자 상담이 필요하다 (사용자 결정 2026-11-12: 정비구역은 🟡)",
   "sourceDoc": "tests/source-docs/building-05.pdf",
   "sourceDocBuilding": "tests/source-docs/building-05-register.pdf"
 }

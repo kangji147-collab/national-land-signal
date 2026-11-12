@@ -2,7 +2,7 @@
   "id": "building-02",
   "type": "building",
   "pnu": "1168010500101590000",
-  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전] 건물 9동 (주소 조회 시 첫 번째 동 사용)",
+  "note": "[AI 초안 2026-11-12 · 사용자 요청으로 국유재산법 기준만 보고 작성, 담당자 검토 전] 건물 9동 (주소 조회 시 첫 번째 동 사용) [정답 변경 2026-11-12: AI 초안 🟢 → 🟡, 사용자 결정]",
   "extracted": {
     "address": "서울특별시 강남구 삼성동 159",
     "landCategory": "대",
@@ -36,8 +36,8 @@
     "inUse": "no",
     "safety": "no"
   },
-  "expectedSignal": "green",
-  "expectedReason": "삼성동 업무·숙박·판매시설이 있는 일반상업지역 대지. 행정재산으로 쓰이는 사정이 없는 일반재산으로 가정한다. 국유재산법 제41조①: 일반재산은 처분할 수 있다 (제43조 경쟁입찰이 원칙)",
+  "expectedSignal": "yellow",
+  "expectedReason": "도시계획시설(철도·자동차정류장)이 걸린 땅이라 시설 부지 여부 확인이 필요해 담당자 상담이 필요하다 (사용자 결정 2026-11-12: 공공시설 계획이 걸린 땅은 🟡)",
   "sourceDoc": "tests/source-docs/building-02.pdf",
   "sourceDocBuilding": "tests/source-docs/building-02-register.pdf"
 }
