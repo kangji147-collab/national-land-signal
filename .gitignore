@@ -55,3 +55,6 @@ next-env.d.ts
 /.bkit/
 /.claude/
 /tests/sample/
+
+.vercel
+.env*
