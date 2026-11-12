@@ -6,6 +6,7 @@ import {
   getClientIp,
   getUsageSummary,
   hashIp,
+  normalizeIp,
   reserveUsage,
   runWithUsage,
   todayKst,
@@ -194,6 +195,30 @@ describe("접속 주소 해시", () => {
   it("소금값이 없거나 너무 짧으면 거절한다", () => {
     expect(() => hashIp("1.1.1.1", "")).toThrow();
     expect(() => hashIp("1.1.1.1", "short")).toThrow();
+  });
+});
+
+describe("IPv6 는 앞 64비트가 같으면 같은 사람으로 센다 (한도 우회 방지)", () => {
+  it("같은 /64 안에서 주소를 바꿔도 같은 값으로 해시된다 (줄여 쓴 모양도 같음)", () => {
+    const base = hashIp("2001:db8:1:2::1", SALT);
+    expect(hashIp("2001:db8:1:2:aaaa:bbbb:cccc:dddd", SALT)).toBe(base);
+    expect(hashIp("2001:0DB8:0001:0002:0:0:0:99", SALT)).toBe(base);
+    expect(hashIp("2001:db8:1:2::ffff", SALT)).toBe(base);
+  });
+  it("앞 64비트가 다르면 다른 사람으로 센다", () => {
+    expect(hashIp("2001:db8:1:3::1", SALT)).not.toBe(hashIp("2001:db8:1:2::1", SALT));
+    expect(hashIp("2001:db8:2:2::1", SALT)).not.toBe(hashIp("2001:db8:1:2::1", SALT));
+  });
+  it("IPv4 는 그대로, IPv4 를 담은 IPv6(::ffff:1.2.3.4)는 IPv4 와 같게 센다", () => {
+    expect(normalizeIp("203.0.113.7")).toBe("203.0.113.7");
+    expect(normalizeIp("::ffff:203.0.113.7")).toBe("203.0.113.7");
+    expect(hashIp("203.0.113.7", SALT)).toBe(hashIp("::ffff:203.0.113.7", SALT));
+  });
+  it("읽을 수 없는 값(unknown, 이상한 IPv6)은 바꾸지 않는다", () => {
+    for (const v of ["unknown", "1:2:3", "a::b::c", "zzzz::1", "1:2:3:4:5:6:7:8:9"]) expect(normalizeIp(v), v).toBe(v);
+  });
+  it("인터페이스 이름(%eth0)이 붙어도 같게 센다", () => {
+    expect(normalizeIp("fe80::1%eth0")).toBe(normalizeIp("fe80::2"));
   });
 });
 

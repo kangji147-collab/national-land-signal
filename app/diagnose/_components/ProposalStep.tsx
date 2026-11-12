@@ -37,6 +37,23 @@ type ImageState =
   | { phase: "error"; error: UiError };
 const IMAGE_TIMEOUT_MS = 110_000; // 서버가 이미지를 최대 100초 기다린다
 
+/**
+ * 이미지를 만드는 동안 "N초 지났어요"를 보여준다. (멈춘 것처럼 보이지 않게)
+ * 화면에 나타날 때부터 세므로 다시 시도하면 0초부터 다시 센다. 읽어 주는 도구가 매초 읽지 않도록 aria-hidden.
+ */
+function ElapsedSeconds() {
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setSeconds((n) => n + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <span aria-hidden="true" data-testid="image-elapsed" className="whitespace-nowrap">
+      ({seconds}초 지났어요)
+    </span>
+  );
+}
+
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -154,7 +171,7 @@ export function ProposalStep({
         <h2 className="text-lg font-semibold">시뮬레이션 이미지</h2>
         {image.phase === "loading" && (
           <p role="status" className="text-base text-zinc-600 dark:text-zinc-400" data-testid="image-loading">
-            개발 후 모습을 만들고 있어요. 1분 정도 걸릴 수 있어요…
+            개발 후 모습을 만들고 있어요. 1분 정도 걸릴 수 있어요… <ElapsedSeconds />
           </p>
         )}
         {image.phase === "done" && (

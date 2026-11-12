@@ -85,10 +85,32 @@ export function getClientIp(headers: Headers): string {
   return first("x-vercel-forwarded-for") ?? first("x-real-ip") ?? first("x-forwarded-for") ?? "unknown";
 }
 
+/**
+ * 횟수를 세는 기준 주소를 만든다. (보안 점검 SEC-003)
+ * IPv6 는 한 사람이 앞 64비트(/64) 안의 주소를 사실상 마음대로 바꿔 쓸 수 있으므로 앞 4덩어리만 같으면 같은 사람으로 센다.
+ * IPv4(와 IPv4 를 담은 IPv6)는 그대로 쓰고, 읽을 수 없는 값은 바꾸지 않는다.
+ */
+export function normalizeIp(ip: string): string {
+  const v4 = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(ip);
+  if (v4) return v4[1];
+  if (!ip.includes(":")) return ip;
+
+  const addr = ip.split("%")[0]; // 인터페이스 이름(%eth0) 제거
+  const halves = addr.split("::");
+  if (halves.length > 2) return ip;
+  const head = halves[0] ? halves[0].split(":") : [];
+  const tail = halves.length === 2 && halves[1] ? halves[1].split(":") : [];
+  const missing = 8 - head.length - tail.length;
+  if (missing < (halves.length === 2 ? 1 : 0) || (halves.length === 1 && missing !== 0)) return ip;
+  const groups = [...head, ...Array<string>(halves.length === 2 ? missing : 0).fill("0"), ...tail];
+  if (groups.length !== 8 || !groups.every((g) => /^[0-9a-f]{1,4}$/i.test(g))) return ip;
+  return groups.slice(0, 4).map((g) => parseInt(g, 16).toString(16)).join(":") + "::/64";
+}
+
 /** 접속 주소를 소금값과 섞어 해시한다. 같은 주소·같은 소금이면 항상 같은 값, 원래 주소는 복원할 수 없다. */
 export function hashIp(ip: string, salt: string | undefined = process.env.IP_HASH_SALT): string {
   if (!salt || salt.length < 16) throw new Error("IP_HASH_SALT 값이 없거나 너무 짧아요");
-  return createHmac("sha256", salt).update(ip).digest("hex");
+  return createHmac("sha256", salt).update(normalizeIp(ip)).digest("hex");
 }
 
 export interface Reservation {
