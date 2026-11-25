@@ -4,7 +4,6 @@
 //  - 로고·캐릭터·사진·문구는 쓰지 않고 색과 분위기만 맞췄다. (사용자 요청 2026-11-12)
 //  - 글과 안내 문구는 그대로이고 꾸밈만 바뀌었다. 색은 globals.css 의 --navy·--blue·--accent·--panel 을 쓴다.
 import Image from "next/image";
-import Link from "next/link";
 import { MESSAGES } from "@/lib/messages";
 
 // 선택 버튼 (누르면 진단 화면으로 가며, 종류는 주소 뒤에 붙인다)
@@ -60,7 +59,9 @@ export default function Home() {
           <ul className="grid gap-4 sm:grid-cols-2">
             {CHOICES.map((c) => (
               <li key={c.type}>
-                <Link
+                {/* 페이지를 새로 불러와야 이전 진단 값이 남지 않는다 */}
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                <a
                   href={`/diagnose?type=${c.type}`}
                   className="group flex h-full min-h-36 items-center gap-5 border-2 border-white/30 p-6 transition-colors hover:border-white hover:bg-white/10 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
@@ -74,7 +75,7 @@ export default function Home() {
                   <span aria-hidden="true" className="text-2xl leading-none transition-transform group-hover:translate-x-1">
                     →
                   </span>
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
